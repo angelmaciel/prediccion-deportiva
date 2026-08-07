@@ -26,7 +26,10 @@ on:
         required: true
         default: bootstrap
         type: choice
-        options: [bootstrap, sincronizacion, reentrenamiento]
+        # `admin` no tiene horario: se corre a mano una vez, al desplegar. No
+        # forma parte de `bootstrap` a proposito — ese corre todos los dias y
+        # reescribiria la contrasena del admin en cada corrida.
+        options: [bootstrap, sincronizacion, reentrenamiento, admin]
 
 concurrency:
   # Dos corridas a la vez sobre la misma base se pisarian entre si.
@@ -69,6 +72,7 @@ jobs:
             "0 4 * * *"|"manual:bootstrap")        echo "cual=bootstrap" >> "$GITHUB_OUTPUT" ;;
             "0 6 * * *"|"manual:sincronizacion")   echo "cual=sincronizacion" >> "$GITHUB_OUTPUT" ;;
             "0 5 * * 1"|"manual:reentrenamiento")  echo "cual=reentrenamiento" >> "$GITHUB_OUTPUT" ;;
+            "manual:admin")                        echo "cual=admin" >> "$GITHUB_OUTPUT" ;;
             *) echo "Disparador no reconocido"; exit 1 ;;
           esac
 
@@ -91,3 +95,25 @@ jobs:
         run: |
           python manage.py entrenar
           python manage.py predecir
+
+      # Crear el primer administrador. Se corre a mano una sola vez: `bootstrap`
+      # carga datos y entrena, pero no crea usuarios, asi que sin este paso no
+      # hay con que entrar al panel.
+      #
+      # Las credenciales viven solo aca, no en el servicio web: la API nunca
+      # necesita conocerlas, le alcanza con el hash que queda en la base.
+      - name: Crear el admin inicial
+        if: steps.tarea.outputs.cual == 'admin'
+        working-directory: backend
+        env:
+          ADMIN_EMAIL_INICIAL: ${{ secrets.ADMIN_EMAIL_INICIAL }}
+          ADMIN_PASSWORD_INICIAL: ${{ secrets.ADMIN_PASSWORD_INICIAL }}
+        run: |
+          # Sin las variables, `crear-admin` cae a pedir los datos por teclado y
+          # revienta con un EOFError que no explica nada. Mejor decir que falta.
+          if [ -z "$ADMIN_EMAIL_INICIAL" ] || [ -z "$ADMIN_PASSWORD_INICIAL" ]; then
+            echo "Faltan los secretos ADMIN_EMAIL_INICIAL y ADMIN_PASSWORD_INICIAL."
+            echo "Cargalos en Settings > Secrets and variables > Actions y repeti."
+            exit 1
+          fi
+          python manage.py crear-admin
