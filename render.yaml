@@ -1,0 +1,107 @@
+# Blueprint de Render. Crea la base, el backend y el frontend en un solo deploy.
+# Los secretos marcados con `sync: false` se cargan a mano en el dashboard y
+# nunca viajan en el repositorio.
+
+databases:
+  - name: prediccion-db
+    databaseName: prediccion
+    user: prediccion
+    plan: free
+
+services:
+  - type: web
+    name: prediccion-api
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /salud
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: ENTORNO
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: COOKIE_SEGURA
+        value: "true"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: prediccion-db
+          property: connectionString
+      # Generados por Render la primera vez y persistidos entre deploys.
+      - key: SECRET_KEY
+        generateValue: true
+      # Deben cargarse a mano: requieren formato especifico (32 bytes en base64).
+      - key: CLAVE_CIFRADO_DATOS
+        sync: false
+      - key: CLAVE_INDICE_CIEGO
+        generateValue: true
+      - key: ORIGENES_PERMITIDOS
+        value: https://prediccion-web.onrender.com
+      - key: FOOTBALL_DATA_TOKEN
+        sync: false
+      - key: API_FOOTBALL_KEY
+        sync: false
+      # El plan gratuito duerme el servicio: el scheduler embebido no correria
+      # de forma confiable. Se usa el cron job de abajo en su lugar.
+      - key: SCHEDULER_ACTIVO
+        value: "false"
+
+  - type: web
+    name: prediccion-web
+    runtime: static
+    plan: free
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://prediccion-api.onrender.com
+    routes:
+      # SPA: todas las rutas resuelven al index para que React Router funcione.
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: no-referrer
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://prediccion-api.onrender.com; base-uri 'none'; frame-ancestors 'none'"
+
+  # Sincronizacion diaria + reentrenamiento. Reemplaza al APScheduler embebido
+  # en planes donde el servicio web se duerme por inactividad.
+  - type: cron
+    name: prediccion-sincronizacion
+    runtime: python
+    plan: free
+    schedule: "0 6 * * *"
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && python manage.py sincronizar && python manage.py predecir && python manage.py metricas
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: ENTORNO
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: prediccion-db
+          property: connectionString
+      - key: CLAVE_CIFRADO_DATOS
+        sync: false
+      - key: CLAVE_INDICE_CIEGO
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: FOOTBALL_DATA_TOKEN
+        sync: false
+      - key: API_FOOTBALL_KEY
+        sync: false
