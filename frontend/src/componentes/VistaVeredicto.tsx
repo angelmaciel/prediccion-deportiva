@@ -167,6 +167,25 @@ export function VistaVeredicto({ partido }: { partido: Partido }) {
         </section>
       )}
 
+      {datos.senales.length > 0 && (
+        <section className="mt-4">
+          <h4 className="text-xs font-semibold text-pizarra-700">Analisis propio</h4>
+          <p className="mt-0.5 text-[11px] text-pizarra-500">
+            Reglas escritas a mano. No mueven las probabilidades del modelo: se leen al lado.
+          </p>
+          <ul className="mt-2 space-y-1 text-xs">
+            {datos.senales.map((senial) => (
+              <li key={senial.nombre} className="flex justify-between gap-2">
+                <span className="text-pizarra-500">{senial.nombre}</span>
+                <span className={`text-right ${COLOR_FAVORECE[senial.favorece]}`}>
+                  {senial.detalle}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <ListaEscenarios titulo="Escenarios simples" escenarios={datos.escenarios_simples} />
 
       <ListaEscenarios

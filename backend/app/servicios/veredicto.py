@@ -14,11 +14,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from sqlalchemy.orm import Session
+
 from app.core.config import obtener_config
 from app.ml.features import NOMBRES_FEATURES
 from app.ml.mercados import ResultadoEscenario, combinadas, simples
 from app.ml.modelo import CLASES, ModeloPrediccion
 from app.ml.persistencia import cargar_poisson_activo
+from app.ml.personalizado import ContextoPartido, LadoPartido, Senial, evaluar
 from app.ml.poisson import ModeloPoissonBivariado
 from app.modelos.futbol import FeaturesPartido, Partido
 
@@ -57,6 +60,9 @@ class Veredicto:
     factores: list[Factor] = field(default_factory=list)
     escenarios_simples: list[ResultadoEscenario] = field(default_factory=list)
     escenarios_combinados: list[ResultadoEscenario] = field(default_factory=list)
+    # Lo que devuelven los analizadores propios de `app.ml.personalizado`. Van
+    # aparte de `factores` para que se vea que no salen del modelo entrenado.
+    senales: list[Senial] = field(default_factory=list)
 
 
 def _factores(features: FeaturesPartido | None) -> list[Factor]:
@@ -133,12 +139,49 @@ def _confianza(probabilidad: float, consenso: bool) -> str:
     return "baja"
 
 
+def _contexto(db: Session | None, partido: Partido, matriz: list[list[float]] | None):
+    """Arma lo que reciben los analizadores propios.
+
+    Sin sesion de base se arma igual, pero sin historial: los analizadores que
+    lo necesiten devolveran `None` y simplemente no apareceran.
+    """
+    h2h: list[Partido] = []
+    previos_local: list[Partido] = []
+    previos_visitante: list[Partido] = []
+    if db is not None:
+        from app.servicios.h2h import enfrentamientos_previos, ultimos_partidos
+
+        h2h = enfrentamientos_previos(db, partido)
+        previos_local = ultimos_partidos(db, partido.equipo_local_id, partido.fecha)
+        previos_visitante = ultimos_partidos(db, partido.equipo_visitante_id, partido.fecha)
+
+    return ContextoPartido(
+        partido=partido,
+        local=LadoPartido(
+            equipo_id=partido.equipo_local_id,
+            nombre=partido.equipo_local.nombre,
+            de_local=True,
+            previos=previos_local,
+        ),
+        visitante=LadoPartido(
+            equipo_id=partido.equipo_visitante_id,
+            nombre=partido.equipo_visitante.nombre,
+            de_local=False,
+            previos=previos_visitante,
+        ),
+        h2h=h2h,
+        features=partido.features,
+        matriz=matriz,
+    )
+
+
 def construir_veredicto(
     partido: Partido,
     modelo: ModeloPrediccion,
     poisson: ModeloPoissonBivariado | None = None,
     max_simples: int = 8,
     max_combinadas: int = 8,
+    db: Session | None = None,
 ) -> Veredicto:
     features = partido.features
     if features is None:
@@ -183,6 +226,7 @@ def construir_veredicto(
         factores=_factores(features),
         escenarios_simples=simples(matriz)[:max_simples],
         escenarios_combinados=combinadas(matriz)[:max_combinadas],
+        senales=evaluar(_contexto(db, partido, matriz)),
     )
 
 
