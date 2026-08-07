@@ -94,3 +94,50 @@ export interface Usuario {
 export interface Proveedores {
   google: boolean
 }
+
+/** Promedios por partido. `null` = la fuente no publica ese dato. */
+export interface PromediosH2H {
+  goles_favor: number | null
+  goles_contra: number | null
+  remates: number | null
+  remates_arco: number | null
+  corners: number | null
+  faltas: number | null
+  amarillas: number | null
+  rojas: number | null
+  atajadas: number | null
+}
+
+export interface EquipoH2H {
+  equipo_id: number
+  nombre: string
+  jugados: number
+  ganados: number
+  empatados: number
+  perdidos: number
+  promedios: PromediosH2H
+}
+
+export interface CruceH2H {
+  partido_id: number
+  fecha: string
+  liga: string
+  temporada: string | null
+  local: string
+  visitante: string
+  goles_local: number
+  goles_visitante: number
+  tiene_estadisticas: boolean
+}
+
+export interface HistorialH2H {
+  partido_id: number
+  solo_misma_localia: boolean
+  liga: string | null
+  total_cruces: number
+  cruces_con_estadisticas: number
+  local: EquipoH2H
+  visitante: EquipoH2H
+  cruces: CruceH2H[]
+  aviso_atajadas: string
+}

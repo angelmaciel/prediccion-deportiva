@@ -42,9 +42,7 @@ class Resultado(StrEnum):
 
 class Equipo(Base):
     __tablename__ = "equipos"
-    __table_args__ = (
-        UniqueConstraint("fuente", "external_id", name="uq_equipo_fuente_external"),
-    )
+    __table_args__ = (UniqueConstraint("fuente", "external_id", name="uq_equipo_fuente_external"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     nombre: Mapped[str] = mapped_column(String(120), nullable=False, index=True)
@@ -93,6 +91,9 @@ class Partido(Base):
     features: Mapped[FeaturesPartido | None] = relationship(
         back_populates="partido", uselist=False, cascade="all, delete-orphan"
     )
+    estadisticas: Mapped[EstadisticasPartido | None] = relationship(  # noqa: F821
+        back_populates="partido", uselist=False, cascade="all, delete-orphan"
+    )
     predicciones: Mapped[list[Prediccion]] = relationship(  # noqa: F821
         back_populates="partido", cascade="all, delete-orphan"
     )
@@ -100,6 +101,58 @@ class Partido(Base):
     @property
     def finalizado(self) -> bool:
         return self.estado == EstadoPartido.FINALIZADO and self.resultado_real is not None
+
+
+class EstadisticasPartido(Base):
+    """Estadisticas del partido tal como las publica la fuente.
+
+    Van aparte de `Partido` porque solo existen para lo importado de
+    football-data.co.uk: las APIs del plan gratuito dan el marcador y nada mas.
+    Un partido sin fila aca es un partido del que no sabemos los remates, no un
+    partido con cero remates, y la diferencia importa al promediar.
+    """
+
+    __tablename__ = "estadisticas_partido"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    partido_id: Mapped[int] = mapped_column(
+        ForeignKey("partidos.id", ondelete="CASCADE"), unique=True, index=True
+    )
+
+    remates_local: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    remates_visitante: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    remates_arco_local: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    remates_arco_visitante: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    corners_local: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    corners_visitante: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    faltas_local: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    faltas_visitante: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    amarillas_local: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    amarillas_visitante: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    rojas_local: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    rojas_visitante: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
+    partido: Mapped[Partido] = relationship(back_populates="estadisticas")
+
+    @property
+    def atajadas_local(self) -> int | None:
+        """Estimacion: los remates al arco del rival que no terminaron en gol.
+
+        La fuente no publica atajadas. Sobreestima un poco (un remate al arco
+        puede irse por poco o pegar en el palo), asi que se expone como
+        estimacion y nunca como dato duro.
+        """
+        return _atajadas(self.remates_arco_visitante, self.partido.goles_visitante)
+
+    @property
+    def atajadas_visitante(self) -> int | None:
+        return _atajadas(self.remates_arco_local, self.partido.goles_local)
+
+
+def _atajadas(remates_al_arco: int | None, goles_recibidos: int | None) -> int | None:
+    if remates_al_arco is None or goles_recibidos is None:
+        return None
+    return max(0, remates_al_arco - goles_recibidos)
 
 
 class FeaturesPartido(Base):

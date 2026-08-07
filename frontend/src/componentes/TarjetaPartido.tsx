@@ -1,6 +1,9 @@
+import { useState } from 'react'
+
 import type { Partido } from '../tipos'
 import { etiquetaResultado, formatearFechaHora, nivelDeConfianza } from '../formato'
 import { BarraProbabilidades } from './BarraProbabilidades'
+import { PanelH2H } from './PanelH2H'
 
 function Escudo({ url, nombre }: { url: string | null; nombre: string }) {
   if (!url) {
@@ -22,6 +25,8 @@ export function TarjetaPartido({ partido }: { partido: Partido }) {
   const finalizado = partido.estado === 'finalizado'
   const acerto =
     finalizado && prediccion ? prediccion.resultado_predicho === partido.resultado_real : null
+  const [abierto, setAbierto] = useState(false)
+  const idPanel = `h2h-${partido.id}`
 
   return (
     <article className="tarjeta">
@@ -100,6 +105,26 @@ export function TarjetaPartido({ partido }: { partido: Partido }) {
         <p className="border-t border-pizarra-100 pt-3 text-xs text-pizarra-400">
           Todavia no hay una estimacion para este partido.
         </p>
+      )}
+
+      <button
+        type="button"
+        onClick={() => setAbierto(!abierto)}
+        aria-expanded={abierto}
+        aria-controls={idPanel}
+        className="mt-3 flex w-full items-center justify-center gap-1 rounded-lg
+                   py-1.5 text-xs font-medium text-cancha-700 transition hover:bg-cancha-50"
+      >
+        {abierto ? 'Ocultar historial' : 'Ver historial entre estos equipos'}
+        <span aria-hidden="true" className={abierto ? 'rotate-180' : undefined}>
+          ▾
+        </span>
+      </button>
+
+      {abierto && (
+        <div id={idPanel}>
+          <PanelH2H partido={partido} />
+        </div>
       )}
     </article>
   )
