@@ -22,7 +22,7 @@ services:
       - .env
     environment:
       DATABASE_URL: postgresql+psycopg://prediccion:prediccion@db:5432/prediccion
-      ORIGENES_PERMITIDOS: http://localhost:5173
+      ORIGENES_PERMITIDOS: http://localhost:${PUERTO_FRONTEND:-5173}
     depends_on:
       db:
         condition: service_healthy
@@ -44,7 +44,8 @@ services:
     depends_on:
       - backend
     ports:
-      - "5173:5173"
+      # Configurable via PUERTO_FRONTEND para no chocar con otros proyectos Vite.
+      - "${PUERTO_FRONTEND:-5173}:5173"
     volumes:
       - ./frontend:/app
       - /app/node_modules
