@@ -1,0 +1,21 @@
+# Instalacion sin build backend (util para Render / Docker).
+# La fuente de verdad de las dependencias es pyproject.toml.
+fastapi>=0.115
+uvicorn[standard]>=0.32
+pydantic>=2.9
+pydantic-settings>=2.6
+email-validator>=2.2
+sqlalchemy>=2.0.36
+alembic>=1.14
+psycopg[binary]>=3.2
+argon2-cffi>=23.1
+cryptography>=43.0
+pyotp>=2.9
+slowapi>=0.1.9
+apscheduler>=3.10
+httpx>=0.27
+numpy>=1.26
+pandas>=2.2
+scipy>=1.13
+scikit-learn>=1.5
+joblib>=1.4
