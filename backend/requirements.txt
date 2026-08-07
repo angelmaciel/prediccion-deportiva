@@ -14,6 +14,8 @@ pyotp>=2.9
 slowapi>=0.1.9
 apscheduler>=3.10
 httpx>=0.27
+# Analisis narrativo opcional; sin ANTHROPIC_API_KEY nunca se importa.
+anthropic>=0.120
 numpy>=1.26
 pandas>=2.2
 scipy>=1.13

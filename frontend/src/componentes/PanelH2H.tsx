@@ -9,9 +9,14 @@ import { useEffect, useState } from 'react'
 import { api } from '../api'
 import { formatearFecha } from '../formato'
 import type { HistorialH2H, Partido, PromediosH2H, RachaEquipo } from '../tipos'
+import { VistaNarrativa } from './VistaNarrativa'
 import { VistaVeredicto } from './VistaVeredicto'
 
-const FILAS: { clave: keyof PromediosH2H; etiqueta: string; estimado?: boolean }[] = [
+const FILAS: {
+  clave: keyof PromediosH2H
+  etiqueta: string
+  estimado?: boolean
+}[] = [
   { clave: 'goles_favor', etiqueta: 'Goles a favor' },
   { clave: 'goles_contra', etiqueta: 'Goles en contra' },
   { clave: 'remates', etiqueta: 'Remates' },
@@ -29,7 +34,11 @@ const COLOR_RESULTADO: Record<string, string> = {
   P: 'bg-rose-100 text-rose-700',
 }
 
-const NOMBRE_RESULTADO: Record<string, string> = { G: 'Ganó', E: 'Empató', P: 'Perdió' }
+const NOMBRE_RESULTADO: Record<string, string> = {
+  G: 'Ganó',
+  E: 'Empató',
+  P: 'Perdió',
+}
 
 function Valor({ valor }: { valor: number | null }) {
   if (valor === null) {
@@ -192,7 +201,9 @@ export function PanelH2H({ partido }: { partido: Partido }) {
   const [datos, setDatos] = useState<HistorialH2H | null>(null)
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(false)
-  const [vista, setVista] = useState<'veredicto' | 'h2h' | 'local' | 'visitante'>('veredicto')
+  const [vista, setVista] = useState<'veredicto' | 'analisis' | 'h2h' | 'local' | 'visitante'>(
+    'veredicto',
+  )
   const [soloMismaLocalia, setSoloMismaLocalia] = useState(false)
   const [soloEstaLiga, setSoloEstaLiga] = useState(false)
 
@@ -224,8 +235,12 @@ export function PanelH2H({ partido }: { partido: Partido }) {
 
   const pestanas = [
     { id: 'veredicto' as const, texto: 'Veredicto' },
+    { id: 'analisis' as const, texto: 'Analisis' },
     { id: 'h2h' as const, texto: 'Entre si' },
-    { id: 'local' as const, texto: partido.equipo_local.nombre_corto ?? partido.equipo_local.nombre },
+    {
+      id: 'local' as const,
+      texto: partido.equipo_local.nombre_corto ?? partido.equipo_local.nombre,
+    },
     {
       id: 'visitante' as const,
       texto: partido.equipo_visitante.nombre_corto ?? partido.equipo_visitante.nombre,
@@ -253,9 +268,9 @@ export function PanelH2H({ partido }: { partido: Partido }) {
         ))}
       </div>
 
-      {/* Los filtros acotan el historial; el veredicto sale del modelo entrenado
-          con todo, asi que no aplican y se ocultan para no sugerir que si. */}
-      {vista !== 'veredicto' && (
+      {/* Los filtros acotan el historial; el veredicto y el analisis no salen
+          de esa consulta, asi que no aplican y se ocultan para no sugerir que si. */}
+      {vista !== 'veredicto' && vista !== 'analisis' && (
         <div className="mt-2 flex flex-wrap gap-4 text-xs">
           <label className="flex items-center gap-1.5">
             <input
@@ -278,6 +293,8 @@ export function PanelH2H({ partido }: { partido: Partido }) {
 
       {vista === 'veredicto' ? (
         <VistaVeredicto partido={partido} />
+      ) : vista === 'analisis' ? (
+        <VistaNarrativa partido={partido} />
       ) : cargando && !datos ? (
         <p className="mt-3 text-xs text-pizarra-400">Cargando historial…</p>
       ) : !datos ? null : vista === 'local' ? (
@@ -292,11 +309,7 @@ export function PanelH2H({ partido }: { partido: Partido }) {
         <>
           <p className="mt-3 text-xs text-pizarra-600">
             {datos.total_cruces} {datos.total_cruces === 1 ? 'cruce' : 'cruces'} ·{' '}
-            <Balance
-              g={datos.local.ganados}
-              e={datos.local.empatados}
-              p={datos.local.perdidos}
-            />{' '}
+            <Balance g={datos.local.ganados} e={datos.local.empatados} p={datos.local.perdidos} />{' '}
             para {datos.local.nombre}
             {datos.cruces_con_estadisticas < datos.total_cruces && (
               <span className="text-pizarra-400">
@@ -330,7 +343,7 @@ export function PanelH2H({ partido }: { partido: Partido }) {
         </>
       )}
 
-      {datos && vista !== 'veredicto' && (
+      {datos && vista !== 'veredicto' && vista !== 'analisis' && (
         <p className="mt-3 text-[11px] text-pizarra-400">* {datos.aviso_atajadas}</p>
       )}
     </div>

@@ -375,3 +375,23 @@ class VeredictoSalida(BaseModel):
     escenarios_combinados: list[EscenarioSalida]
     senales: list[SenialSalida] = []
     aviso: str = AVISO_VEREDICTO
+
+
+# --- Analisis narrativo ---
+
+
+class NarrativaSalida(BaseModel):
+    """Analisis en prosa escrito por un modelo de lenguaje."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    partido_id: int
+    texto: str
+    modelo: str
+    fuentes: list[str] = []
+    creado_en: datetime
+    aviso: str = (
+        "Analisis redactado por un modelo de lenguaje a partir de los datos propios y de "
+        "busqueda web. Las afirmaciones sobre lesiones, sanciones o convocatorias provienen "
+        "de las fuentes citadas, no de la base del proyecto."
+    )

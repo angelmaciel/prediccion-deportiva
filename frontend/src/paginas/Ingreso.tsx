@@ -72,9 +72,7 @@ export default function Ingreso({ onSesion }: Props) {
 
   return (
     <div className="mx-auto max-w-md">
-      <h1 className="text-2xl font-bold">
-        {modo === 'login' ? 'Iniciar sesion' : 'Crear cuenta'}
-      </h1>
+      <h1 className="text-2xl font-bold">{modo === 'login' ? 'Iniciar sesion' : 'Crear cuenta'}</h1>
       <p className="mt-1 text-sm text-pizarra-600">
         La cuenta no es necesaria para ver predicciones ni el historial de aciertos: todo eso es
         publico.

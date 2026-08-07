@@ -53,7 +53,9 @@ export default function Resultados() {
 
       {pagina_.cargando && <Cargando />}
       {pagina_.error && <ErrorCarga mensaje={pagina_.error} />}
-      {pagina_.datos?.items.length === 0 && <SinDatos texto="Todavia no hay resultados cargados." />}
+      {pagina_.datos?.items.length === 0 && (
+        <SinDatos texto="Todavia no hay resultados cargados." />
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {(pagina_.datos?.items ?? []).map((partido) => (

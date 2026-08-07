@@ -21,9 +21,9 @@ export function AvisoModelo({ compacto = false }: { compacto?: boolean }) {
     >
       <p className="font-semibold">Como leer estos numeros</p>
       <p className="mt-1">
-        Las probabilidades que se muestran son <strong>estimaciones estadisticas</strong>{' '}
-        calculadas a partir de datos historicos. No son garantias ni pronosticos certeros: un
-        partido con 70&nbsp;% estimado para el local igual se pierde muchas veces.
+        Las probabilidades que se muestran son <strong>estimaciones estadisticas</strong> calculadas
+        a partir de datos historicos. No son garantias ni pronosticos certeros: un partido con
+        70&nbsp;% estimado para el local igual se pierde muchas veces.
       </p>
       <p className="mt-2">
         Este es un proyecto de analisis de datos. No gestiona dinero, no intermedia apuestas y no
