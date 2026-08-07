@@ -9,11 +9,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.config import obtener_config
+from app.ml.almacen import cargar_modelo, cargar_poisson_activo
 from app.ml.features import NOMBRES_FEATURES
 from app.ml.modelo import ModeloPrediccion
-from app.ml.persistencia import cargar_poisson_activo
 from app.modelos.futbol import EstadoPartido, FeaturesPartido, Partido
-from app.modelos.prediccion import Prediccion, VersionModelo
+from app.modelos.prediccion import Prediccion
 from app.servicios.entrenamiento import cargar_partidos_historicos, construir_dataset
 
 logger = logging.getLogger(__name__)
@@ -26,19 +26,18 @@ class ModeloNoDisponible(RuntimeError):
 
 
 def modelo_activo(db: Session) -> tuple[ModeloPrediccion, str]:
+    """Modelo vigente. Busca en disco y, si no esta, lo rehidrata de la base.
+
+    En produccion el disco es efimero y no se comparte entre el job que entrena
+    y el servicio que predice: sin la cascada, la API nunca ve el modelo.
+    """
     config = obtener_config()
-    modelo = ModeloPrediccion.cargar_activo(config.directorio_artefactos)
-    if modelo is None:
+    cargado = cargar_modelo(db, config.directorio_artefactos)
+    if cargado is None:
         raise ModeloNoDisponible(
             "No hay modelo entrenado. Ejecutar el reentrenamiento antes de predecir."
         )
-    version = modelo.version
-    if version is None:
-        registro = db.execute(
-            select(VersionModelo).where(VersionModelo.activa.is_(True))
-        ).scalar_one_or_none()
-        version = registro.version if registro else "desconocida"
-    return modelo, version
+    return cargado
 
 
 def vector_desde(features: FeaturesPartido) -> list[float]:
@@ -53,12 +52,11 @@ def generar_predicciones(db: Session, horizonte_dias: int = HORIZONTE_DIAS) -> i
     entrenamiento: con la informacion disponible hasta su fecha.
     """
     modelo, version = modelo_activo(db)
-    poisson = cargar_poisson_activo(obtener_config().directorio_artefactos)
+    poisson = cargar_poisson_activo(db, obtener_config().directorio_artefactos)
 
     partidos = cargar_partidos_historicos(db)
     construir_dataset(partidos, persistir_en=db)  # persiste features de todos los partidos
     db.flush()
-
 
     ahora = datetime.now(timezone.utc)
     limite = ahora + timedelta(days=horizonte_dias)

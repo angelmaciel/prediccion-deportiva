@@ -11,6 +11,7 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Integer,
+    LargeBinary,
     String,
     Text,
     UniqueConstraint,
@@ -112,6 +113,16 @@ class VersionModelo(Base):
     # Detalle por pliegue de la validacion walk-forward.
     metricas_detalle: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     activa: Mapped[bool] = mapped_column(default=False, nullable=False)
+
+    # Los artefactos entrenados viven aca, no solo en disco. En produccion el
+    # job que entrena y el servicio que predice corren en maquinas distintas, y
+    # el disco de cada una es efimero: un modelo guardado solo en el disco del
+    # job nunca llega a la API, y uno guardado solo en el disco de la API
+    # desaparece cuando el servicio se reinicia. La base es lo unico que ambos
+    # comparten. Son pocos KB: una logistica de 13 features y los parametros
+    # del Poisson.
+    artefacto_modelo: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
+    artefacto_poisson: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
 
 
 class MetricaJornada(Base):
