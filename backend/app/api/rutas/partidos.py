@@ -10,13 +10,24 @@ from sqlalchemy.orm import Session
 
 from app.db.session import obtener_db
 from app.esquemas import (
+    CruceH2H,
+    EquipoH2H,
     EquipoSalida,
+    HistorialH2H,
     PaginaPartidos,
     PartidoSalida,
     PrediccionSalida,
+    PromediosH2H,
 )
 from app.modelos.futbol import Equipo, EstadoPartido, Partido
 from app.modelos.prediccion import Prediccion
+from app.servicios.h2h import (
+    LIMITE_POR_DEFECTO,
+    ResumenEquipo,
+    con_estadisticas,
+    enfrentamientos_previos,
+    resumir,
+)
 
 router = APIRouter(prefix="/partidos", tags=["partidos"])
 
@@ -129,9 +140,7 @@ def proximos_partidos(
         filtros.append(Partido.liga == liga)
 
     partidos = list(
-        db.execute(
-            select(Partido).where(*filtros).order_by(Partido.fecha.asc()).limit(limite)
-        )
+        db.execute(select(Partido).where(*filtros).order_by(Partido.fecha.asc()).limit(limite))
         .unique()
         .scalars()
     )
@@ -166,3 +175,65 @@ def detalle_partido(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Partido no encontrado")
     predicciones = _ultimas_predicciones(db, [partido.id])
     return _a_salida(partido, predicciones.get(partido.id))
+
+
+def _a_equipo_h2h(resumen: ResumenEquipo) -> EquipoH2H:
+    return EquipoH2H(
+        equipo_id=resumen.equipo_id,
+        nombre=resumen.nombre,
+        jugados=resumen.jugados,
+        ganados=resumen.ganados,
+        empatados=resumen.empatados,
+        perdidos=resumen.perdidos,
+        promedios=PromediosH2H(
+            **{clave: acumulador.promedio for clave, acumulador in resumen.metricas.items()}
+        ),
+    )
+
+
+@router.get("/{partido_id}/h2h", response_model=HistorialH2H)
+def historial_h2h(
+    request: Request,
+    partido_id: int,
+    db: Session = Depends(obtener_db),
+    solo_misma_localia: bool = Query(
+        default=False,
+        description="Solo los cruces en los que el local de este partido tambien fue local",
+    ),
+    liga: str | None = Query(default=None, max_length=80),
+    limite: int = Query(default=LIMITE_POR_DEFECTO, ge=1, le=50),
+) -> HistorialH2H:
+    """Enfrentamientos directos anteriores a este partido, con promedios."""
+    partido = db.get(Partido, partido_id)
+    if partido is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Partido no encontrado")
+
+    previos = enfrentamientos_previos(
+        db, partido, solo_misma_localia=solo_misma_localia, liga=liga, limite=limite
+    )
+
+    return HistorialH2H(
+        partido_id=partido.id,
+        solo_misma_localia=solo_misma_localia,
+        liga=liga,
+        total_cruces=len(previos),
+        cruces_con_estadisticas=con_estadisticas(previos),
+        local=_a_equipo_h2h(resumir(previos, partido.equipo_local_id, partido.equipo_local.nombre)),
+        visitante=_a_equipo_h2h(
+            resumir(previos, partido.equipo_visitante_id, partido.equipo_visitante.nombre)
+        ),
+        cruces=[
+            CruceH2H(
+                partido_id=previo.id,
+                fecha=previo.fecha,
+                liga=previo.liga,
+                temporada=previo.temporada,
+                local=previo.equipo_local.nombre,
+                visitante=previo.equipo_visitante.nombre,
+                goles_local=previo.goles_local,
+                goles_visitante=previo.goles_visitante,
+                tiene_estadisticas=previo.estadisticas is not None,
+            )
+            for previo in previos
+        ],
+    )

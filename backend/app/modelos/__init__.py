@@ -3,6 +3,7 @@
 from app.modelos.auditoria import ConsumoCuota, EjecucionJob, LogAcceso
 from app.modelos.futbol import (
     Equipo,
+    EstadisticasPartido,
     EstadoPartido,
     FeaturesPartido,
     Fuente,
@@ -11,12 +12,13 @@ from app.modelos.futbol import (
     Resultado,
 )
 from app.modelos.prediccion import MetricaJornada, Prediccion, VersionModelo
-from app.modelos.usuarios import Rol, Sesion, Usuario
+from app.modelos.usuarios import Proveedor, Rol, Sesion, Usuario
 
 __all__ = [
     "ConsumoCuota",
     "Equipo",
     "EjecucionJob",
+    "EstadisticasPartido",
     "EstadoPartido",
     "FeaturesPartido",
     "Fuente",
@@ -24,6 +26,7 @@ __all__ = [
     "MetricaJornada",
     "Partido",
     "Prediccion",
+    "Proveedor",
     "RatingElo",
     "Resultado",
     "Rol",

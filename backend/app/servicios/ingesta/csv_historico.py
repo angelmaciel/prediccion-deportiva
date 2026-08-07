@@ -28,7 +28,14 @@ import httpx
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.modelos.futbol import Equipo, EstadoPartido, Fuente, Partido, Resultado
+from app.modelos.futbol import (
+    Equipo,
+    EstadisticasPartido,
+    EstadoPartido,
+    Fuente,
+    Partido,
+    Resultado,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -161,6 +168,24 @@ ALIAS_CRUDO = {
 MAX_PALABRAS_SOBRANTES = 2
 
 
+# Columna del CSV -> campo de EstadisticasPartido. Las viejas temporadas a veces
+# no traen alguna, por eso todo lo que falte queda en None y no en cero.
+ESTADISTICAS = {
+    "HS": "remates_local",
+    "AS": "remates_visitante",
+    "HST": "remates_arco_local",
+    "AST": "remates_arco_visitante",
+    "HC": "corners_local",
+    "AC": "corners_visitante",
+    "HF": "faltas_local",
+    "AF": "faltas_visitante",
+    "HY": "amarillas_local",
+    "AY": "amarillas_visitante",
+    "HR": "rojas_local",
+    "AR": "rojas_visitante",
+}
+
+
 @dataclass(slots=True)
 class FilaHistorica:
     fecha: datetime
@@ -168,6 +193,7 @@ class FilaHistorica:
     visitante: str
     goles_local: int
     goles_visitante: int
+    estadisticas: dict[str, int]
 
 
 @dataclass(slots=True)
@@ -346,11 +372,26 @@ def parsear(texto: str) -> list[FilaHistorica]:
                     visitante=visitante,
                     goles_local=int(goles_local),
                     goles_visitante=int(goles_visitante),
+                    estadisticas=_estadisticas(fila),
                 )
             )
         except ValueError:
             continue
     return filas
+
+
+def _estadisticas(fila: dict) -> dict[str, int]:
+    """Toma solo las columnas que estan y traen un entero."""
+    leidas: dict[str, int] = {}
+    for columna, campo in ESTADISTICAS.items():
+        crudo = (fila.get(columna) or "").strip()
+        if not crudo:
+            continue
+        try:
+            leidas[campo] = int(float(crudo))
+        except ValueError:
+            continue
+    return leidas
 
 
 def _fecha(crudo: str, hora: str) -> datetime | None:
@@ -423,7 +464,22 @@ def importar_division(db: Session, division: str, temporada: str) -> ResultadoIm
         )
         db.flush()
 
+        if fila.estadisticas:
+            _guardar_estadisticas(db, partido, fila.estadisticas)
+
     return resultado
+
+
+def _guardar_estadisticas(db: Session, partido: Partido, valores: dict[str, int]) -> None:
+    registro = db.execute(
+        select(EstadisticasPartido).where(EstadisticasPartido.partido_id == partido.id)
+    ).scalar_one_or_none()
+    if registro is None:
+        registro = EstadisticasPartido(partido_id=partido.id)
+        db.add(registro)
+    for campo, valor in valores.items():
+        setattr(registro, campo, valor)
+    db.flush()
 
 
 def temporadas_recientes(cantidad: int, hasta: int | None = None) -> list[str]:

@@ -8,6 +8,7 @@
 // `credentials: 'include'` y no hay ningun token en localStorage.
 
 import type {
+  HistorialH2H,
   MetricaJornada,
   PaginaPartidos,
   Partido,
@@ -72,6 +73,14 @@ export const api = {
     pedir<PaginaPartidos>(`/partidos${query({ ...params, por_pagina: 20 })}`),
 
   detallePartido: (id: number) => pedir<Partido>(`/partidos/${id}`),
+
+  h2h: (id: number, opciones: { solo_misma_localia?: boolean; liga?: string } = {}) =>
+    pedir<HistorialH2H>(
+      `/partidos/${id}/h2h${query({
+        solo_misma_localia: opciones.solo_misma_localia ? 'true' : undefined,
+        liga: opciones.liga,
+      })}`,
+    ),
 
   ligas: () => pedir<string[]>('/partidos/ligas'),
 

@@ -235,3 +235,59 @@ class ResumenEntrenamientoSalida(BaseModel):
     brier: float
     linea_base: float
     pliegues: list[PliegueSalida]
+
+
+# --- Historial de enfrentamientos directos ---
+
+AVISO_ATAJADAS = (
+    "Las atajadas son una estimacion: la fuente no las publica y se calculan "
+    "como remates al arco del rival menos goles recibidos."
+)
+
+
+class PromediosH2H(BaseModel):
+    """Promedios por partido. `null` = la fuente no trae ese dato."""
+
+    goles_favor: float | None = None
+    goles_contra: float | None = None
+    remates: float | None = None
+    remates_arco: float | None = None
+    corners: float | None = None
+    faltas: float | None = None
+    amarillas: float | None = None
+    rojas: float | None = None
+    atajadas: float | None = None
+
+
+class EquipoH2H(BaseModel):
+    equipo_id: int
+    nombre: str
+    jugados: int
+    ganados: int
+    empatados: int
+    perdidos: int
+    promedios: PromediosH2H
+
+
+class CruceH2H(BaseModel):
+    partido_id: int
+    fecha: datetime
+    liga: str
+    temporada: str | None = None
+    local: str
+    visitante: str
+    goles_local: int
+    goles_visitante: int
+    tiene_estadisticas: bool
+
+
+class HistorialH2H(BaseModel):
+    partido_id: int
+    solo_misma_localia: bool
+    liga: str | None = None
+    total_cruces: int
+    cruces_con_estadisticas: int
+    local: EquipoH2H
+    visitante: EquipoH2H
+    cruces: list[CruceH2H]
+    aviso_atajadas: str = AVISO_ATAJADAS
