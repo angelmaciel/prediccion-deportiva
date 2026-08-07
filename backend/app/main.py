@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-from app.api.rutas import admin, auth, partidos, transparencia
+from app.api.rutas import admin, auth, oauth, partidos, transparencia
 from app.core.config import obtener_config
 from app.core.limites import limiter
 from app.core.middleware import HeadersSeguridad, VerificacionOrigen
@@ -92,6 +92,7 @@ async def manejar_error_no_previsto(request: Request, exc: Exception) -> JSONRes
 
 
 app.include_router(auth.router)
+app.include_router(oauth.router)
 app.include_router(partidos.router)
 app.include_router(transparencia.router)
 app.include_router(admin.router)
