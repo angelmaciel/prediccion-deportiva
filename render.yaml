@@ -66,8 +66,12 @@ services:
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
+      # El sufijo `-64rd` no es decorativo: `prediccion-api.onrender.com` ya
+      # estaba tomado por otra cuenta, asi que Render le asigno a este servicio
+      # un hostname distinto del nombre. Tiene que coincidir caracter por
+      # caracter con la URI autorizada en Google Cloud Console.
       - key: GOOGLE_REDIRECT_URI
-        value: https://prediccion-api.onrender.com/auth/google/callback
+        value: https://prediccion-api-64rd.onrender.com/auth/google/callback
       # Analisis narrativo. Es un servicio de pago: sin clave el endpoint
       # responde 404 y no se gasta nada.
       - key: ANTHROPIC_API_KEY
@@ -87,8 +91,10 @@ services:
     buildCommand: cd frontend && npm ci && npm run build
     staticPublishPath: frontend/dist
     envVars:
+      # Se hornea dentro del bundle al construir: cambiarla exige reconstruir el
+      # sitio, no alcanza con reiniciarlo.
       - key: VITE_API_URL
-        value: https://prediccion-api.onrender.com
+        value: https://prediccion-api-64rd.onrender.com
     routes:
       # SPA: todas las rutas resuelven al index para que React Router funcione.
       - type: rewrite
@@ -106,4 +112,7 @@ services:
         value: no-referrer
       - path: /*
         name: Content-Security-Policy
-        value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://prediccion-api.onrender.com; base-uri 'none'; frame-ancestors 'none'"
+        # `connect-src` tiene que listar el mismo host que VITE_API_URL: si se
+        # cambia uno y no el otro el navegador bloquea cada llamada, y el error
+        # aparece en la consola como violacion de CSP, no como fallo de red.
+        value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://prediccion-api-64rd.onrender.com; base-uri 'none'; frame-ancestors 'none'"
