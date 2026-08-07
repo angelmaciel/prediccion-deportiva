@@ -17,10 +17,10 @@ from dataclasses import dataclass, field
 from sqlalchemy.orm import Session
 
 from app.core.config import obtener_config
+from app.ml.almacen import cargar_poisson_activo
 from app.ml.features import NOMBRES_FEATURES
 from app.ml.mercados import ResultadoEscenario, combinadas, simples
 from app.ml.modelo import CLASES, ModeloPrediccion
-from app.ml.persistencia import cargar_poisson_activo
 from app.ml.personalizado import ContextoPartido, LadoPartido, Senial, evaluar
 from app.ml.poisson import ModeloPoissonBivariado
 from app.modelos.futbol import FeaturesPartido, Partido
@@ -191,7 +191,8 @@ def construir_veredicto(
     probs = modelo.predecir_probabilidades([vector])[0]
     prob_logistica = (float(probs[0]), float(probs[1]), float(probs[2]))
 
-    poisson = poisson or cargar_poisson_activo(obtener_config().directorio_artefactos)
+    if poisson is None and db is not None:
+        poisson = cargar_poisson_activo(db, obtener_config().directorio_artefactos)
     if poisson is None or not poisson.ajustado:
         # Sin Poisson no hay matriz y por lo tanto no hay escenarios; el
         # veredicto se apoya solo en la logistica y se dice que no hubo consenso.

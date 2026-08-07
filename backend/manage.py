@@ -18,7 +18,7 @@ import random
 import sys
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from app.core.config import obtener_config
 from app.core.crypto import indice_ciego, normalizar_email
@@ -35,6 +35,7 @@ from app.modelos import (  # noqa: F401  (registra las tablas)
     Rol,
     Usuario,
 )
+from app.modelos.prediccion import VersionModelo
 from app.servicios.entrenamiento import DatosInsuficientes, entrenar_modelo
 from app.servicios.ingesta.csv_historico import DIVISIONES, temporadas_recientes
 from app.servicios.ingesta.sincronizacion import (
@@ -123,6 +124,54 @@ def cmd_importar_csv(temporadas: int, divisiones: str | None) -> int:
         )
         total = importar_historico_csv(db, codigos, elegidas)
         log.info("Historico importado: %d partidos nuevos", total)
+        return 0
+    finally:
+        db.close()
+
+
+def cmd_bootstrap(temporadas: int = 10) -> int:
+    """Deja una base vacia lista para servir, y no hace nada si ya lo esta.
+
+    Es idempotente a proposito: en produccion se ejecuta desde un job que puede
+    reintentarse, quedarse sin tiempo a mitad de camino o correr sobre una base
+    que ya tiene todo. Cada paso se saltea si su resultado ya existe, asi que
+    volver a correrlo retoma donde quedo en vez de duplicar trabajo.
+    """
+    db = FabricaSesion()
+    try:
+        finalizados = db.execute(
+            select(func.count(Partido.id)).where(Partido.estado == EstadoPartido.FINALIZADO)
+        ).scalar_one()
+
+        if finalizados < obtener_config().minimo_partidos_entrenamiento:
+            log.info("Base sin historico (%d finalizados): importando CSV", finalizados)
+            importar_historico_csv(db, temporadas_recientes(temporadas))
+        else:
+            log.info("Historico ya cargado: %d partidos finalizados", finalizados)
+
+        programados = db.execute(
+            select(func.count(Partido.id)).where(Partido.estado == EstadoPartido.PROGRAMADO)
+        ).scalar_one()
+        if programados == 0:
+            log.info("Sin partidos programados: trayendo la temporada europea completa")
+            sincronizar_europa(db, ventana=False)
+            db.commit()
+        else:
+            log.info("Ya hay %d partidos programados", programados)
+
+        activo = db.execute(
+            select(VersionModelo).where(VersionModelo.activa.is_(True))
+        ).scalar_one_or_none()
+        if activo is None:
+            log.info("Sin modelo activo: entrenando")
+            resumen = entrenar_modelo(db)
+            log.info("Modelo %s listo (accuracy %.3f)", resumen.version, resumen.accuracy)
+            backfill_historico(db)
+            recalcular_metricas_por_jornada(db)
+        else:
+            log.info("Modelo activo: %s", activo.version)
+
+        log.info("Predicciones generadas: %d", generar_predicciones(db))
         return 0
     finally:
         db.close()
@@ -345,6 +394,17 @@ def main() -> int:
         help="Codigos separados por coma. Por defecto: " + ",".join(DIVISIONES),
     )
 
+    p_boot = sub.add_parser(
+        "bootstrap",
+        help="Deja una base vacia lista para servir (idempotente: se puede repetir)",
+    )
+    p_boot.add_argument(
+        "--temporadas",
+        type=int,
+        default=10,
+        help="Temporadas de historico a importar si la base esta vacia (por defecto 10)",
+    )
+
     p_entrenar = sub.add_parser("entrenar", help="Reentrena y valida el modelo")
     p_entrenar.add_argument(
         "--algoritmo", default="logistica", choices=["logistica", "random_forest"]
@@ -371,6 +431,8 @@ def main() -> int:
             return cmd_sincronizar(args.temporadas, args.europa_completo)
         case "importar-csv":
             return cmd_importar_csv(args.temporadas, args.divisiones)
+        case "bootstrap":
+            return cmd_bootstrap(args.temporadas)
         case "entrenar":
             return cmd_entrenar(args.algoritmo)
         case "predecir":

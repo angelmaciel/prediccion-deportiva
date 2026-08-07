@@ -16,6 +16,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.config import obtener_config
+from app.ml.almacen import guardar_en_base
 from app.ml.features import (
     NOMBRES_FEATURES,
     CalculadoraFeatures,
@@ -193,6 +194,11 @@ def entrenar_modelo(
                 activa=True,
             )
         )
+
+        # Los artefactos suben a la base recien ahora, con la fila ya creada:
+        # es lo unico que el servicio web va a poder leer despues.
+        db.flush()
+        guardar_en_base(db, version, config.directorio_artefactos)
 
         resumen = ResumenEntrenamiento(
             version=version,

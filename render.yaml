@@ -1,6 +1,11 @@
-# Blueprint de Render. Crea la base, el backend y el frontend en un solo deploy.
+# Blueprint de Render. Crea la base, el backend, el frontend y los jobs.
 # Los secretos marcados con `sync: false` se cargan a mano en el dashboard y
 # nunca viajan en el repositorio.
+#
+# Nota sobre los artefactos del modelo: los `.joblib` se guardan tambien en la
+# base (`versiones_modelo.artefacto_modelo`). Es obligatorio aca — el job que
+# entrena y el servicio web son maquinas distintas con discos efimeros, asi que
+# un artefacto que viviera solo en disco nunca llegaria a la API.
 
 databases:
   - name: prediccion-db
@@ -40,12 +45,28 @@ services:
         generateValue: true
       - key: ORIGENES_PERMITIDOS
         value: https://prediccion-web.onrender.com
+      - key: URL_FRONTEND
+        value: https://prediccion-web.onrender.com
       - key: FOOTBALL_DATA_TOKEN
         sync: false
       - key: API_FOOTBALL_KEY
         sync: false
+      # Ingreso con Google. Sin estas dos el boton no se ofrece y los endpoints
+      # responden 404; la app funciona igual con el formulario.
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        value: https://prediccion-api.onrender.com/auth/google/callback
+      # Analisis narrativo. Es un servicio de pago: sin clave el endpoint
+      # responde 404 y no se gasta nada.
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ANTHROPIC_MODELO
+        value: claude-opus-5
       # El plan gratuito duerme el servicio: el scheduler embebido no correria
-      # de forma confiable. Se usa el cron job de abajo en su lugar.
+      # de forma confiable. Se usan los cron jobs de abajo en su lugar.
       - key: SCHEDULER_ACTIVO
         value: "false"
 
@@ -77,16 +98,18 @@ services:
         name: Content-Security-Policy
         value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://prediccion-api.onrender.com; base-uri 'none'; frame-ancestors 'none'"
 
-  # Sincronizacion diaria + reentrenamiento. Reemplaza al APScheduler embebido
-  # en planes donde el servicio web se duerme por inactividad.
+  # Carga inicial. Idempotente: importa el historico, trae la temporada, entrena
+  # y predice solo si falta. Corre a diario porque en el plan gratuito un job
+  # puede quedarse sin tiempo a mitad de camino; al dia siguiente retoma donde
+  # quedo, y una vez completo cada corrida termina en segundos sin hacer nada.
   - type: cron
-    name: prediccion-sincronizacion
+    name: prediccion-bootstrap
     runtime: python
     plan: free
-    schedule: "0 6 * * *"
+    schedule: "0 4 * * *"
     buildCommand: pip install -r backend/requirements.txt
-    startCommand: cd backend && python manage.py sincronizar && python manage.py predecir && python manage.py metricas
-    envVars:
+    startCommand: cd backend && python manage.py bootstrap
+    envVars: &jobEnv
       - key: PYTHON_VERSION
         value: "3.12.7"
       - key: ENTORNO
@@ -105,3 +128,24 @@ services:
         sync: false
       - key: API_FOOTBALL_KEY
         sync: false
+
+  # Sincronizacion diaria de resultados y fixtures, mas las predicciones nuevas.
+  - type: cron
+    name: prediccion-sincronizacion
+    runtime: python
+    plan: free
+    schedule: "0 6 * * *"
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && python manage.py sincronizar && python manage.py predecir && python manage.py metricas
+    envVars: *jobEnv
+
+  # Reentrenamiento semanal. Sin esto el modelo queda congelado en el que dejo
+  # el bootstrap y nunca incorpora los resultados nuevos.
+  - type: cron
+    name: prediccion-reentrenamiento
+    runtime: python
+    plan: free
+    schedule: "0 5 * * 1"
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && python manage.py entrenar && python manage.py predecir
+    envVars: *jobEnv
