@@ -1,0 +1,15 @@
+# Normaliza los finales de linea a LF en el repositorio.
+# El proyecto se desarrolla en Windows pero se compila y corre en Linux
+# (Docker y Render); sin esto, los CRLF viajan a la imagen y rompen cualquier
+# script con shebang.
+* text=auto eol=lf
+
+# Binarios: que git no los toque.
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.joblib binary
+
+# El lockfile es generado: no ensucia los diffs de las revisiones.
+frontend/package-lock.json linguist-generated=true -diff
