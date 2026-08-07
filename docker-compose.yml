@@ -41,6 +41,8 @@ services:
       target: dev
     environment:
       VITE_API_URL: http://localhost:8000
+      # Lo necesita Vite para apuntar el websocket de HMR al puerto del host.
+      PUERTO_FRONTEND: ${PUERTO_FRONTEND:-5173}
     depends_on:
       - backend
     ports:
