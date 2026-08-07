@@ -281,6 +281,35 @@ class CruceH2H(BaseModel):
     tiene_estadisticas: bool
 
 
+class PartidoDeRacha(BaseModel):
+    """Un partido contado desde la optica de uno de los dos equipos."""
+
+    partido_id: int
+    fecha: datetime
+    liga: str
+    temporada: str | None = None
+    rival: str
+    de_local: bool
+    goles_favor: int
+    goles_contra: int
+    resultado: str = Field(pattern=r"^[GEP]$")
+    tiene_estadisticas: bool
+
+
+class RachaEquipo(BaseModel):
+    """Como viene el equipo contra cualquier rival, no solo contra este."""
+
+    equipo_id: int
+    nombre: str
+    jugados: int
+    ganados: int
+    empatados: int
+    perdidos: int
+    promedios: PromediosH2H
+    partidos_con_estadisticas: int
+    partidos: list[PartidoDeRacha]
+
+
 class HistorialH2H(BaseModel):
     partido_id: int
     solo_misma_localia: bool
@@ -290,4 +319,6 @@ class HistorialH2H(BaseModel):
     local: EquipoH2H
     visitante: EquipoH2H
     cruces: list[CruceH2H]
+    racha_local: RachaEquipo
+    racha_visitante: RachaEquipo
     aviso_atajadas: str = AVISO_ATAJADAS

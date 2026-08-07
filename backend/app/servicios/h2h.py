@@ -13,6 +13,7 @@ Dos decisiones que cambian lo que se ve en pantalla:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime
 
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session, joinedload
@@ -109,6 +110,48 @@ def enfrentamientos_previos(
     return list(db.execute(consulta).unique().scalars())
 
 
+def ultimos_partidos(
+    db: Session,
+    equipo_id: int,
+    antes_de: datetime,
+    localia: str | None = None,
+    liga: str | None = None,
+    limite: int = LIMITE_POR_DEFECTO,
+) -> list[Partido]:
+    """Racha reciente de un equipo contra cualquier rival.
+
+    `localia` acota a los partidos jugados de "local" o de "visitante", que es
+    lo que hace falta para comparar en igualdad de condiciones: el rendimiento
+    de local y de visitante de un mismo equipo suele no parecerse en nada.
+    """
+    if localia == "local":
+        condicion = Partido.equipo_local_id == equipo_id
+    elif localia == "visitante":
+        condicion = Partido.equipo_visitante_id == equipo_id
+    else:
+        condicion = or_(
+            Partido.equipo_local_id == equipo_id,
+            Partido.equipo_visitante_id == equipo_id,
+        )
+
+    consulta = (
+        select(Partido)
+        .options(joinedload(Partido.estadisticas))
+        .where(
+            condicion,
+            Partido.fecha < antes_de,
+            Partido.estado == EstadoPartido.FINALIZADO,
+            Partido.goles_local.is_not(None),
+            Partido.goles_visitante.is_not(None),
+        )
+        .order_by(Partido.fecha.desc())
+        .limit(limite)
+    )
+    if liga:
+        consulta = consulta.where(Partido.liga == liga)
+    return list(db.execute(consulta).unique().scalars())
+
+
 def _lado(previo: Partido, equipo_id: int) -> str:
     return "local" if previo.equipo_local_id == equipo_id else "visitante"
 
@@ -149,3 +192,23 @@ def resumir(previos: list[Partido], equipo_id: int, nombre: str) -> ResumenEquip
 
 def con_estadisticas(previos: list[Partido]) -> int:
     return sum(1 for p in previos if p.estadisticas is not None)
+
+
+def desde_la_optica_de(previo: Partido, equipo_id: int) -> dict:
+    """Un partido contado desde el punto de vista de uno de los dos equipos."""
+    de_local = previo.equipo_local_id == equipo_id
+    favor = previo.goles_local if de_local else previo.goles_visitante
+    contra = previo.goles_visitante if de_local else previo.goles_local
+    rival = previo.equipo_visitante if de_local else previo.equipo_local
+    return {
+        "partido_id": previo.id,
+        "fecha": previo.fecha,
+        "liga": previo.liga,
+        "temporada": previo.temporada,
+        "rival": rival.nombre,
+        "de_local": de_local,
+        "goles_favor": favor,
+        "goles_contra": contra,
+        "resultado": "G" if favor > contra else "P" if favor < contra else "E",
+        "tiene_estadisticas": previo.estadisticas is not None,
+    }

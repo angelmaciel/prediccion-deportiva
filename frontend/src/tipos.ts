@@ -130,6 +130,33 @@ export interface CruceH2H {
   tiene_estadisticas: boolean
 }
 
+/** Un partido contado desde la optica de uno de los dos equipos. */
+export interface PartidoDeRacha {
+  partido_id: number
+  fecha: string
+  liga: string
+  temporada: string | null
+  rival: string
+  de_local: boolean
+  goles_favor: number
+  goles_contra: number
+  resultado: 'G' | 'E' | 'P'
+  tiene_estadisticas: boolean
+}
+
+/** Como viene el equipo contra cualquier rival, no solo contra este. */
+export interface RachaEquipo {
+  equipo_id: number
+  nombre: string
+  jugados: number
+  ganados: number
+  empatados: number
+  perdidos: number
+  promedios: PromediosH2H
+  partidos_con_estadisticas: number
+  partidos: PartidoDeRacha[]
+}
+
 export interface HistorialH2H {
   partido_id: number
   solo_misma_localia: boolean
@@ -139,5 +166,7 @@ export interface HistorialH2H {
   local: EquipoH2H
   visitante: EquipoH2H
   cruces: CruceH2H[]
+  racha_local: RachaEquipo
+  racha_visitante: RachaEquipo
   aviso_atajadas: string
 }

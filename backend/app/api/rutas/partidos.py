@@ -15,9 +15,11 @@ from app.esquemas import (
     EquipoSalida,
     HistorialH2H,
     PaginaPartidos,
+    PartidoDeRacha,
     PartidoSalida,
     PrediccionSalida,
     PromediosH2H,
+    RachaEquipo,
 )
 from app.modelos.futbol import Equipo, EstadoPartido, Partido
 from app.modelos.prediccion import Prediccion
@@ -25,8 +27,10 @@ from app.servicios.h2h import (
     LIMITE_POR_DEFECTO,
     ResumenEquipo,
     con_estadisticas,
+    desde_la_optica_de,
     enfrentamientos_previos,
     resumir,
+    ultimos_partidos,
 )
 
 router = APIRouter(prefix="/partidos", tags=["partidos"])
@@ -177,6 +181,34 @@ def detalle_partido(
     return _a_salida(partido, predicciones.get(partido.id))
 
 
+def _a_racha(
+    db: Session,
+    partido: Partido,
+    equipo: Equipo,
+    localia: str | None,
+    liga: str | None,
+    limite: int,
+) -> RachaEquipo:
+    """Racha reciente de un equipo contra cualquier rival."""
+    previos = ultimos_partidos(
+        db, equipo.id, partido.fecha, localia=localia, liga=liga, limite=limite
+    )
+    resumen = resumir(previos, equipo.id, equipo.nombre)
+    return RachaEquipo(
+        equipo_id=equipo.id,
+        nombre=equipo.nombre,
+        jugados=resumen.jugados,
+        ganados=resumen.ganados,
+        empatados=resumen.empatados,
+        perdidos=resumen.perdidos,
+        promedios=PromediosH2H(
+            **{clave: acumulador.promedio for clave, acumulador in resumen.metricas.items()}
+        ),
+        partidos_con_estadisticas=con_estadisticas(previos),
+        partidos=[PartidoDeRacha(**desde_la_optica_de(previo, equipo.id)) for previo in previos],
+    )
+
+
 def _a_equipo_h2h(resumen: ResumenEquipo) -> EquipoH2H:
     return EquipoH2H(
         equipo_id=resumen.equipo_id,
@@ -236,4 +268,23 @@ def historial_h2h(
             )
             for previo in previos
         ],
+        # Con el filtro de localia activo, a cada equipo se lo mira en la
+        # condicion en que va a jugar este partido: el local de local y el
+        # visitante de visitante.
+        racha_local=_a_racha(
+            db,
+            partido,
+            partido.equipo_local,
+            "local" if solo_misma_localia else None,
+            liga,
+            limite,
+        ),
+        racha_visitante=_a_racha(
+            db,
+            partido,
+            partido.equipo_visitante,
+            "visitante" if solo_misma_localia else None,
+            liga,
+            limite,
+        ),
     )
