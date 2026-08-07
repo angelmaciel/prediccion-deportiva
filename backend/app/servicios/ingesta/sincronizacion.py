@@ -16,6 +16,7 @@ from app.core.config import obtener_config
 from app.modelos.auditoria import EjecucionJob
 from app.modelos.futbol import Equipo, EstadoPartido, Fuente, Partido, Resultado
 from app.servicios.ingesta.api_football import ClienteApiFootball
+from app.servicios.ingesta.csv_historico import DIVISIONES, importar_division
 from app.servicios.ingesta.cuota import ControlCuota, CuotaAgotada
 from app.servicios.ingesta.football_data import (
     COMPETICIONES,
@@ -99,16 +100,25 @@ def guardar_partido(db: Session, crudo: PartidoCrudo, fuente: Fuente) -> tuple[P
     return partido, nuevo
 
 
-def sincronizar_europa(db: Session, cliente: ClienteFootballData | None = None) -> int:
-    """Sincroniza las competiciones europeas del plan gratuito."""
+def sincronizar_europa(
+    db: Session, cliente: ClienteFootballData | None = None, ventana: bool = True
+) -> int:
+    """Sincroniza las competiciones europeas del plan gratuito.
+
+    Con `ventana=False` trae la temporada en curso completa en lugar del rango
+    de fechas habitual: mismo costo en requests (1 por competicion) pero da el
+    historico de resultados que el entrenamiento necesita.
+    """
     cliente = cliente or ClienteFootballData()
     if not cliente.configurado:
         logger.info("football-data.org sin token: se omite la sincronizacion europea")
         return 0
 
-    hoy = datetime.now(timezone.utc).date()
-    desde = (hoy - timedelta(days=DIAS_HACIA_ATRAS)).isoformat()
-    hasta = (hoy + timedelta(days=DIAS_HACIA_ADELANTE)).isoformat()
+    desde = hasta = None
+    if ventana:
+        hoy = datetime.now(timezone.utc).date()
+        desde = (hoy - timedelta(days=DIAS_HACIA_ATRAS)).isoformat()
+        hasta = (hoy + timedelta(days=DIAS_HACIA_ADELANTE)).isoformat()
 
     total = 0
     for codigo in COMPETICIONES:
@@ -148,6 +158,44 @@ def sincronizar_paraguay(
         guardar_partido(db, crudo, Fuente.API_FOOTBALL)
     logger.info("Sincronizados %d partidos de Paraguay (%s)", len(crudos), temporada)
     return len(crudos)
+
+
+def importar_historico_csv(
+    db: Session, temporadas: list[str], divisiones: list[str] | None = None
+) -> int:
+    """Carga el historico de football-data.co.uk (CSV publicos, sin credenciales).
+
+    Se hace aparte de la sincronizacion diaria: es una carga puntual y pesada
+    que solo aporta partidos ya jugados.
+    """
+    divisiones = divisiones or list(DIVISIONES)
+    total = 0
+    for division in divisiones:
+        if division not in DIVISIONES:
+            logger.error("Division desconocida: %s", division)
+            continue
+        for temporada in temporadas:
+            try:
+                resultado = importar_division(db, division, temporada)
+            except FileNotFoundError:
+                # Temporada aun no publicada o liga sin datos ese anio.
+                logger.info("%s %s: no publicado", division, temporada)
+                continue
+            except Exception as exc:  # noqa: BLE001 - una division caida no aborta el resto
+                logger.error("Fallo %s %s: %s", division, temporada, exc)
+                continue
+            db.commit()
+            total += resultado.partidos_nuevos
+            logger.info(
+                "%s %s: %d nuevos, %d actualizados",
+                division,
+                temporada,
+                resultado.partidos_nuevos,
+                resultado.partidos_actualizados,
+            )
+            for creado in resultado.equipos_creados:
+                logger.info("  equipo nuevo en %s: %s", division, creado)
+    return total
 
 
 def sincronizar_todo(db: Session) -> int:

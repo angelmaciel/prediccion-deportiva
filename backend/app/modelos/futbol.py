@@ -23,6 +23,8 @@ from app.db.base import Base, enum_por_valor
 class Fuente(StrEnum):
     FOOTBALL_DATA = "football-data"
     API_FOOTBALL = "api-football"
+    # Historico descargado de football-data.co.uk (CSV publicos, sin API).
+    CSV_HISTORICO = "csv-historico"
 
 
 class EstadoPartido(StrEnum):

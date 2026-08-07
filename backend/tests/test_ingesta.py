@@ -242,6 +242,39 @@ class TestLimitadorPorMinuto:
         assert len(limitador._marcas) == 10
 
 
+class ClienteEuropaFalso:
+    """Cliente de football-data.org que registra con que rango se lo llamo."""
+
+    def __init__(self):
+        self.configurado = True
+        self.llamadas = []
+
+    def partidos_de_competicion(self, codigo, desde=None, hasta=None):
+        self.llamadas.append((codigo, desde, hasta))
+        payload = {**PAYLOAD_FOOTBALL_DATA, "id": hash(codigo) % 10**6}
+        return [_parsear_partido(payload, codigo, "x")]
+
+
+class TestVentanaEuropa:
+    def test_por_defecto_pide_solo_la_ventana_de_fechas(self, db):
+        cliente = ClienteEuropaFalso()
+        sincronizar_europa(db, cliente)
+        assert all(desde and hasta for _, desde, hasta in cliente.llamadas)
+
+    def test_completo_pide_la_temporada_entera(self, db):
+        """Sin rango de fechas, football-data.org devuelve la temporada en curso."""
+        cliente = ClienteEuropaFalso()
+        sincronizar_europa(db, cliente, ventana=False)
+        assert cliente.llamadas
+        assert all(desde is None and hasta is None for _, desde, hasta in cliente.llamadas)
+
+    def test_cubre_las_cinco_grandes_ligas(self, db):
+        cliente = ClienteEuropaFalso()
+        sincronizar_europa(db, cliente)
+        codigos = {codigo for codigo, _, _ in cliente.llamadas}
+        assert {"PL", "PD", "SA", "BL1", "FL1"} <= codigos
+
+
 class TestSincronizacionSinCredenciales:
     def test_europa_sin_token_no_hace_nada(self, db, monkeypatch):
         """Sin credenciales la app arranca igual: solo se salta la ingesta."""

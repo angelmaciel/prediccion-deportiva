@@ -159,11 +159,26 @@ npm run dev
 
 ```bash
 cd backend
-python manage.py sincronizar   # trae partidos reales
-python manage.py entrenar      # entrena y valida walk-forward
-python manage.py backtest      # llena el historial de aciertos
-python manage.py predecir      # predice los próximos partidos
+python manage.py sincronizar --europa-completo   # carga inicial: temporada europea entera
+python manage.py importar-csv --temporadas 10    # histórico de football-data.co.uk (sin key)
+python manage.py entrenar                        # entrena y valida walk-forward
+python manage.py backtest                        # llena el historial de aciertos
+python manage.py predecir                        # predice los próximos partidos
+
+python manage.py sincronizar   # corridas siguientes: ventana de -10/+21 días
 ```
+
+> `importar-csv` no necesita credenciales: football-data.co.uk publica CSVs estáticos con una
+> década de resultados por liga. Es lo que le da profundidad al Elo — el plan gratuito de
+> football-data.org solo trae la temporada en curso, y al arrancar una temporada eso deja a
+> todos los equipos sin historia. Reimportar no duplica: los partidos tienen id determinístico.
+
+> `--europa-completo` cuesta lo mismo que la ventana corta (1 request por competición) pero trae
+> todos los resultados de la temporada en curso, que es lo que el entrenamiento necesita.
+>
+> El plan gratuito de football-data.org cubre 10 competiciones de clubes en su temporada actual; el
+> de API-Football solo llega hasta la temporada 2024 de la liga paraguaya, así que esa queda como
+> histórico. `--temporadas 2022,2023,2024` la carga.
 
 **Sin claves de API**, para probar el pipeline completo con datos simulados:
 

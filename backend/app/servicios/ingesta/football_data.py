@@ -17,20 +17,31 @@ from app.servicios.ingesta.cuota import LimitadorPorMinuto
 
 logger = logging.getLogger(__name__)
 
-# Competiciones cubiertas por el plan gratuito que nos interesan.
+# Competiciones de clubes cubiertas por el plan gratuito. Son la fuente principal
+# de la app: es lo unico gratis que llega a la temporada en curso.
 COMPETICIONES = {
     "PL": "Premier League",
+    "ELC": "Championship",
     "PD": "La Liga",
     "SA": "Serie A",
     "BL1": "Bundesliga",
+    "FL1": "Ligue 1",
+    "DED": "Eredivisie",
+    "PPL": "Primeira Liga",
+    "BSA": "Brasileirao",
     "CL": "Champions League",
 }
 
 PAIS_POR_COMPETICION = {
     "PL": "Inglaterra",
+    "ELC": "Inglaterra",
     "PD": "Espana",
     "SA": "Italia",
     "BL1": "Alemania",
+    "FL1": "Francia",
+    "DED": "Paises Bajos",
+    "PPL": "Portugal",
+    "BSA": "Brasil",
     "CL": "Europa",
 }
 

@@ -27,6 +27,7 @@ from app.ml.persistencia import guardar_poisson
 from app.ml.poisson import ModeloPoissonBivariado
 from app.ml.validacion import (
     MINIMO_ENTRENAMIENTO,
+    MINIMO_EVALUACION,
     linea_base_siempre_local,
     validacion_walk_forward,
 )
@@ -159,7 +160,12 @@ def entrenar_modelo(
             )
 
         # 1) Validacion honesta: mide como se comportaria el modelo hacia adelante.
-        minimo = min(MINIMO_ENTRENAMIENTO, max(50, int(len(X) * 0.5)))
+        #    El primer pliegue arranca a mitad del historico: entrenar con las
+        #    primeras 100 filas y evaluar con las 6.000 siguientes no mide el
+        #    modelo que se va a usar, mide uno que nunca existio. Ademas las
+        #    primeras temporadas tienen el Elo en frio (todos en 1500).
+        minimo = max(MINIMO_ENTRENAMIENTO, int(len(X) * 0.5))
+        minimo = min(minimo, len(X) - MINIMO_EVALUACION)
         validacion = validacion_walk_forward(X, y, algoritmo=algoritmo, minimo_entrenamiento=minimo)
 
         # 2) Modelo final: se reentrena con TODO el historico, que es lo que se
