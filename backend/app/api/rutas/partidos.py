@@ -13,6 +13,8 @@ from app.esquemas import (
     CruceH2H,
     EquipoH2H,
     EquipoSalida,
+    EscenarioSalida,
+    FactorSalida,
     HistorialH2H,
     PaginaPartidos,
     PartidoDeRacha,
@@ -20,7 +22,9 @@ from app.esquemas import (
     PrediccionSalida,
     PromediosH2H,
     RachaEquipo,
+    VeredictoSalida,
 )
+from app.ml.mercados import ResultadoEscenario
 from app.modelos.futbol import Equipo, EstadoPartido, Partido
 from app.modelos.prediccion import Prediccion
 from app.servicios.h2h import (
@@ -32,6 +36,8 @@ from app.servicios.h2h import (
     resumir,
     ultimos_partidos,
 )
+from app.servicios.predicciones import ModeloNoDisponible, modelo_activo
+from app.servicios.veredicto import SinModelo, construir_veredicto
 
 router = APIRouter(prefix="/partidos", tags=["partidos"])
 
@@ -179,6 +185,55 @@ def detalle_partido(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Partido no encontrado")
     predicciones = _ultimas_predicciones(db, [partido.id])
     return _a_salida(partido, predicciones.get(partido.id))
+
+
+def _a_escenario(escenario: ResultadoEscenario) -> EscenarioSalida:
+    return EscenarioSalida(
+        claves=list(escenario.claves),
+        etiqueta=escenario.etiqueta,
+        probabilidad=escenario.probabilidad,
+        probabilidad_ingenua=escenario.probabilidad_ingenua,
+        correlacion=escenario.correlacion,
+    )
+
+
+@router.get("/{partido_id}/veredicto", response_model=VeredictoSalida)
+def veredicto_partido(
+    request: Request, partido_id: int, db: Session = Depends(obtener_db)
+) -> VeredictoSalida:
+    """Lectura unica del partido combinando la logistica y el Poisson."""
+    partido = db.get(Partido, partido_id)
+    if partido is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Partido no encontrado")
+
+    try:
+        modelo, _version = modelo_activo(db)
+        veredicto = construir_veredicto(partido, modelo)
+    except (ModeloNoDisponible, SinModelo) as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+
+    return VeredictoSalida(
+        partido_id=veredicto.partido_id,
+        resultado=veredicto.resultado,
+        etiqueta=veredicto.etiqueta,
+        probabilidad=veredicto.probabilidad,
+        confianza=veredicto.confianza,
+        consenso=veredicto.consenso,
+        prob_logistica=list(veredicto.prob_logistica),
+        prob_poisson=list(veredicto.prob_poisson),
+        marcador_probable=(
+            list(veredicto.marcador_probable[:2]) if veredicto.marcador_probable else None
+        ),
+        prob_marcador_probable=(
+            veredicto.marcador_probable[2] if veredicto.marcador_probable else None
+        ),
+        factores=[
+            FactorSalida(nombre=f.nombre, detalle=f.detalle, favorece=f.favorece)
+            for f in veredicto.factores
+        ],
+        escenarios_simples=[_a_escenario(e) for e in veredicto.escenarios_simples],
+        escenarios_combinados=[_a_escenario(e) for e in veredicto.escenarios_combinados],
+    )
 
 
 def _a_racha(

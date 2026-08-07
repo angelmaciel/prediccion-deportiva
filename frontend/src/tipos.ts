@@ -130,6 +130,39 @@ export interface CruceH2H {
   tiene_estadisticas: boolean
 }
 
+/** Un dato observable que empuja el partido para un lado. */
+export interface Factor {
+  nombre: string
+  detalle: string
+  favorece: 'L' | 'V' | '-'
+}
+
+export interface Escenario {
+  claves: string[]
+  etiqueta: string
+  probabilidad: number
+  /** Solo en las combinadas: lo que daria multiplicar las marginales. */
+  probabilidad_ingenua: number | null
+  correlacion: number | null
+}
+
+export interface Veredicto {
+  partido_id: number
+  resultado: 'L' | 'E' | 'V'
+  etiqueta: string
+  probabilidad: number
+  confianza: 'alta' | 'media' | 'baja'
+  consenso: boolean
+  prob_logistica: number[]
+  prob_poisson: number[]
+  marcador_probable: number[] | null
+  prob_marcador_probable: number | null
+  factores: Factor[]
+  escenarios_simples: Escenario[]
+  escenarios_combinados: Escenario[]
+  aviso: string
+}
+
 /** Un partido contado desde la optica de uno de los dos equipos. */
 export interface PartidoDeRacha {
   partido_id: number

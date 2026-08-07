@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../api'
 import { formatearFecha } from '../formato'
 import type { HistorialH2H, Partido, PromediosH2H, RachaEquipo } from '../tipos'
+import { VistaVeredicto } from './VistaVeredicto'
 
 const FILAS: { clave: keyof PromediosH2H; etiqueta: string; estimado?: boolean }[] = [
   { clave: 'goles_favor', etiqueta: 'Goles a favor' },
@@ -191,7 +192,7 @@ export function PanelH2H({ partido }: { partido: Partido }) {
   const [datos, setDatos] = useState<HistorialH2H | null>(null)
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(false)
-  const [vista, setVista] = useState<'h2h' | 'local' | 'visitante'>('h2h')
+  const [vista, setVista] = useState<'veredicto' | 'h2h' | 'local' | 'visitante'>('veredicto')
   const [soloMismaLocalia, setSoloMismaLocalia] = useState(false)
   const [soloEstaLiga, setSoloEstaLiga] = useState(false)
 
@@ -222,6 +223,7 @@ export function PanelH2H({ partido }: { partido: Partido }) {
   }
 
   const pestanas = [
+    { id: 'veredicto' as const, texto: 'Veredicto' },
     { id: 'h2h' as const, texto: 'Entre si' },
     { id: 'local' as const, texto: partido.equipo_local.nombre_corto ?? partido.equipo_local.nombre },
     {
@@ -251,26 +253,32 @@ export function PanelH2H({ partido }: { partido: Partido }) {
         ))}
       </div>
 
-      <div className="mt-2 flex flex-wrap gap-4 text-xs">
-        <label className="flex items-center gap-1.5">
-          <input
-            type="checkbox"
-            checked={soloMismaLocalia}
-            onChange={(e) => setSoloMismaLocalia(e.target.checked)}
-          />
-          Solo con esta localia
-        </label>
-        <label className="flex items-center gap-1.5">
-          <input
-            type="checkbox"
-            checked={soloEstaLiga}
-            onChange={(e) => setSoloEstaLiga(e.target.checked)}
-          />
-          Solo {partido.liga}
-        </label>
-      </div>
+      {/* Los filtros acotan el historial; el veredicto sale del modelo entrenado
+          con todo, asi que no aplican y se ocultan para no sugerir que si. */}
+      {vista !== 'veredicto' && (
+        <div className="mt-2 flex flex-wrap gap-4 text-xs">
+          <label className="flex items-center gap-1.5">
+            <input
+              type="checkbox"
+              checked={soloMismaLocalia}
+              onChange={(e) => setSoloMismaLocalia(e.target.checked)}
+            />
+            Solo con esta localia
+          </label>
+          <label className="flex items-center gap-1.5">
+            <input
+              type="checkbox"
+              checked={soloEstaLiga}
+              onChange={(e) => setSoloEstaLiga(e.target.checked)}
+            />
+            Solo {partido.liga}
+          </label>
+        </div>
+      )}
 
-      {cargando && !datos ? (
+      {vista === 'veredicto' ? (
+        <VistaVeredicto partido={partido} />
+      ) : cargando && !datos ? (
         <p className="mt-3 text-xs text-pizarra-400">Cargando historial…</p>
       ) : !datos ? null : vista === 'local' ? (
         <VistaRacha racha={datos.racha_local} aviso={datos.aviso_atajadas} />
@@ -322,7 +330,9 @@ export function PanelH2H({ partido }: { partido: Partido }) {
         </>
       )}
 
-      {datos && <p className="mt-3 text-[11px] text-pizarra-400">* {datos.aviso_atajadas}</p>}
+      {datos && vista !== 'veredicto' && (
+        <p className="mt-3 text-[11px] text-pizarra-400">* {datos.aviso_atajadas}</p>
+      )}
     </div>
   )
 }

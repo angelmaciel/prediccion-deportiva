@@ -322,3 +322,46 @@ class HistorialH2H(BaseModel):
     racha_local: RachaEquipo
     racha_visitante: RachaEquipo
     aviso_atajadas: str = AVISO_ATAJADAS
+
+
+# --- Veredicto ---
+
+AVISO_VEREDICTO = (
+    "Un veredicto es el escenario mas probable segun dos modelos estadisticos, "
+    "no un pronostico ni una recomendacion. Las probabilidades combinadas se "
+    "calculan sobre la matriz de marcadores, que respeta la correlacion entre "
+    "eventos: multiplicarlas por separado daria numeros mas altos y falsos."
+)
+
+
+class FactorSalida(BaseModel):
+    nombre: str
+    detalle: str
+    favorece: str = Field(pattern=r"^[LV-]$")
+
+
+class EscenarioSalida(BaseModel):
+    claves: list[str]
+    etiqueta: str
+    probabilidad: float
+    # Solo en las combinadas: lo que daria multiplicar las marginales como si
+    # los eventos fueran independientes, y la brecha contra el calculo real.
+    probabilidad_ingenua: float | None = None
+    correlacion: float | None = None
+
+
+class VeredictoSalida(BaseModel):
+    partido_id: int
+    resultado: str = Field(pattern=r"^[LEV]$")
+    etiqueta: str
+    probabilidad: float
+    confianza: str
+    consenso: bool
+    prob_logistica: list[float]
+    prob_poisson: list[float]
+    marcador_probable: list[int] | None = None
+    prob_marcador_probable: float | None = None
+    factores: list[FactorSalida]
+    escenarios_simples: list[EscenarioSalida]
+    escenarios_combinados: list[EscenarioSalida]
+    aviso: str = AVISO_VEREDICTO
