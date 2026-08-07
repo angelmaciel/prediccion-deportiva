@@ -18,7 +18,7 @@ import random
 import sys
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 
 from app.core.config import obtener_config
 from app.core.crypto import indice_ciego, normalizar_email
@@ -37,7 +37,7 @@ from app.modelos import (  # noqa: F401  (registra las tablas)
 )
 from app.modelos.prediccion import VersionModelo
 from app.servicios.entrenamiento import DatosInsuficientes, entrenar_modelo
-from app.servicios.ingesta.csv_historico import DIVISIONES, temporadas_recientes
+from app.servicios.ingesta.csv_historico import DIVISIONES, clave_club, temporadas_recientes
 from app.servicios.ingesta.sincronizacion import (
     calcular_resultado,
     importar_historico_csv,
@@ -175,6 +175,86 @@ def cmd_bootstrap(temporadas: int = 10) -> int:
             log.info("Modelo activo: %s", activo.version)
 
         log.info("Predicciones generadas: %d", generar_predicciones(db))
+        return 0
+    finally:
+        db.close()
+
+
+def cmd_fusionar_equipos(aplicar: bool = False) -> int:
+    """Une los registros duplicados de un mismo club y repunta sus partidos.
+
+    Hizo falta porque la sincronizacion creaba un equipo nuevo cuando la API lo
+    nombraba distinto del CSV ("Arsenal FC" al lado de "Arsenal"). Eso ya no
+    pasa, pero las bases cargadas antes del arreglo arrastran los duplicados, y
+    el problema no se ve: los partidos que vienen apuntan al registro vacio, asi
+    que el modelo predice sin historia y el cara a cara sale en blanco.
+
+    Por defecto solo informa. Hay que pasar --aplicar para que escriba.
+    """
+    db = FabricaSesion()
+    try:
+        equipos = list(db.execute(select(Equipo)).scalars().all())
+
+        # Cuantos partidos tiene cada uno, para saber cual conservar.
+        partidos_por_equipo: dict[int, int] = {}
+        for columna in (Partido.equipo_local_id, Partido.equipo_visitante_id):
+            for equipo_id, cuantos in db.execute(
+                select(columna, func.count()).group_by(columna)
+            ).all():
+                partidos_por_equipo[equipo_id] = partidos_por_equipo.get(equipo_id, 0) + cuantos
+
+        grupos: dict[tuple[str, str], list[Equipo]] = {}
+        for equipo in equipos:
+            firma = clave_club(equipo.nombre)
+            if not firma:
+                continue
+            grupos.setdefault((equipo.pais, firma), []).append(equipo)
+
+        duplicados = {k: v for k, v in grupos.items() if len(v) > 1}
+        if not duplicados:
+            log.info("Sin duplicados: %d equipos, todos distintos", len(equipos))
+            return 0
+
+        fusionados = 0
+        for (pais, _), miembros in sorted(duplicados.items()):
+            # Se conserva el que tiene mas partidos: es el que carga la historia.
+            miembros.sort(key=lambda e: (-partidos_por_equipo.get(e.id, 0), e.id))
+            principal, *sobrantes = miembros
+            log.info(
+                "%s: conservar '%s' (id %d, %d partidos)",
+                pais,
+                principal.nombre,
+                principal.id,
+                partidos_por_equipo.get(principal.id, 0),
+            )
+            for otro in sobrantes:
+                log.info(
+                    "    absorber '%s' (id %d, %d partidos)",
+                    otro.nombre,
+                    otro.id,
+                    partidos_por_equipo.get(otro.id, 0),
+                )
+                if not aplicar:
+                    continue
+                for columna in ("equipo_local_id", "equipo_visitante_id"):
+                    db.execute(
+                        update(Partido)
+                        .where(getattr(Partido, columna) == otro.id)
+                        .values(**{columna: principal.id})
+                    )
+                # El escudo suele venir de la API, que es la que crea el
+                # duplicado: conviene quedarselo antes de borrarlo.
+                if otro.escudo_url and not principal.escudo_url:
+                    principal.escudo_url = otro.escudo_url
+                db.delete(otro)
+                fusionados += 1
+
+        if not aplicar:
+            log.info("Simulacion: %d grupos con duplicados. Repetir con --aplicar", len(duplicados))
+            return 0
+
+        db.commit()
+        log.info("Fusionados %d equipos sobrantes en %d grupos", fusionados, len(duplicados))
         return 0
     finally:
         db.close()
@@ -408,6 +488,16 @@ def main() -> int:
         help="Temporadas de historico a importar si la base esta vacia (por defecto 10)",
     )
 
+    p_fusion = sub.add_parser(
+        "fusionar-equipos",
+        help="Une registros duplicados del mismo club (informa salvo que se pase --aplicar)",
+    )
+    p_fusion.add_argument(
+        "--aplicar",
+        action="store_true",
+        help="Escribir los cambios. Sin esto solo muestra que haria.",
+    )
+
     p_entrenar = sub.add_parser("entrenar", help="Reentrena y valida el modelo")
     p_entrenar.add_argument(
         "--algoritmo", default="logistica", choices=["logistica", "random_forest"]
@@ -436,6 +526,8 @@ def main() -> int:
             return cmd_importar_csv(args.temporadas, args.divisiones)
         case "bootstrap":
             return cmd_bootstrap(args.temporadas)
+        case "fusionar-equipos":
+            return cmd_fusionar_equipos(args.aplicar)
         case "entrenar":
             return cmd_entrenar(args.algoritmo)
         case "predecir":

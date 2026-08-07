@@ -16,7 +16,12 @@ from app.core.config import obtener_config
 from app.modelos.auditoria import EjecucionJob
 from app.modelos.futbol import Equipo, EstadoPartido, Fuente, Partido, Resultado
 from app.servicios.ingesta.api_football import ClienteApiFootball
-from app.servicios.ingesta.csv_historico import DIVISIONES, importar_division
+from app.servicios.ingesta.csv_historico import (
+    DIVISIONES,
+    buscar_equipo_existente,
+    importar_division,
+    recordar_equipo,
+)
 from app.servicios.ingesta.cuota import ControlCuota, CuotaAgotada
 from app.servicios.ingesta.football_data import (
     COMPETICIONES,
@@ -37,6 +42,29 @@ def obtener_o_crear_equipo(db: Session, crudo: EquipoCrudo, fuente: Fuente) -> E
     equipo = db.execute(
         select(Equipo).where(Equipo.fuente == fuente, Equipo.external_id == crudo.external_id)
     ).scalar_one_or_none()
+
+    if equipo is None:
+        # Antes de crear uno nuevo, ver si el club ya esta cargado por otra
+        # fuente. Sin este paso cada equipo terminaba duplicado: el CSV deja
+        # "Arsenal" con diez temporadas encima y la API crea "Arsenal FC" en
+        # blanco al lado. Los partidos que vienen apuntan al registro nuevo, con
+        # lo que el modelo predice a ciegas sobre un equipo sin historia y el
+        # cara a cara sale vacio — y nada de eso da error, solo probabilidades
+        # de un tercio para cada resultado.
+        equipo = buscar_equipo_existente(db, crudo.nombre, crudo.pais)
+        if equipo is not None:
+            logger.info(
+                "Equipo reconciliado: '%s' ya estaba cargado como '%s'",
+                crudo.nombre,
+                equipo.nombre,
+            )
+            # Pasa a identificarse por el id de esta fuente. Lo que importa es
+            # que conserva su id interno, y con el toda su historia.
+            equipo.fuente = fuente
+            equipo.external_id = crudo.external_id
+            if crudo.nombre_corto:
+                equipo.nombre_corto = crudo.nombre_corto
+
     if equipo is None:
         equipo = Equipo(
             nombre=crudo.nombre,
@@ -49,6 +77,9 @@ def obtener_o_crear_equipo(db: Session, crudo: EquipoCrudo, fuente: Fuente) -> E
         )
         db.add(equipo)
         db.flush()
+        # Al indice tambien, o el siguiente partido de este mismo equipo no lo
+        # encontraria y crearia otro duplicado.
+        recordar_equipo(db, equipo)
     else:
         # Los nombres y escudos cambian entre temporadas; mantenerlos frescos.
         equipo.nombre = crudo.nombre
