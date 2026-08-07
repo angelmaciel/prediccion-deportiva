@@ -348,37 +348,59 @@ Cobertura por área:
 
 El repositorio incluye `render.yaml` (Blueprint). Desde el dashboard de Render:
 
-1. **New → Blueprint** y apuntar al repositorio. Render crea la base, la API, el frontend estático
-   y los tres cron jobs (carga inicial, sincronización diaria, reentrenamiento semanal).
+1. **New → Blueprint** y apuntar al repositorio. Render crea la base, la API y el frontend estático.
 2. Cargar a mano los secretos marcados `sync: false`:
    - `CLAVE_CIFRADO_DATOS` — 32 bytes en base64:
      `python -c "import base64,os; print(base64.urlsafe_b64encode(os.urandom(32)).decode())"`
    - `FOOTBALL_DATA_TOKEN` (gratis, permanente) y opcionalmente `API_FOOTBALL_KEY`
    - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` si se quiere el ingreso con Google
    - `ANTHROPIC_API_KEY` si se quiere el análisis narrativo (es de pago)
-   - En los cron jobs hay que repetir `CLAVE_CIFRADO_DATOS`, `CLAVE_INDICE_CIEGO` y `SECRET_KEY`
-     con los mismos valores que la API: comparten la base y las claves de cifrado.
 3. Ajustar `ORIGENES_PERMITIDOS`, `URL_FRONTEND`, `GOOGLE_REDIRECT_URI` (backend) y `VITE_API_URL`
    (frontend) a las URLs reales que asigne Render.
-4. Crear el admin: `cd backend && python manage.py crear-admin` (o dejar `ADMIN_EMAIL_INICIAL` y
-   `ADMIN_PASSWORD_INICIAL` en el entorno del job de bootstrap).
+4. Crear el admin desde la Shell del servicio: `cd backend && python manage.py crear-admin`.
 
-La primera corrida de `prediccion-bootstrap` importa el histórico, trae la temporada, entrena y
-predice. Es **idempotente**: si el job se queda sin tiempo a mitad de camino, el del día siguiente
-retoma donde quedó, y una vez completo cada corrida termina en segundos sin hacer nada.
+### Los jobs programados viven en GitHub Actions
+
+Render **no tiene plan gratuito para servicios `cron`** — se facturan por minuto desde Starter. El
+trabajo periódico está en [`.github/workflows/mantenimiento.yml`](.github/workflows/mantenimiento.yml),
+que es gratis en repositorios públicos, deja el historial de cada corrida a la vista y corre contra
+la **URL externa** de la base de Render:
+
+| Tarea | Cuándo | Qué hace |
+| --- | --- | --- |
+| `bootstrap` | Diario 04:00 UTC | Importa el histórico, trae la temporada, entrena y predice. Idempotente. |
+| `sincronizacion` | Diario 06:00 UTC | Resultados y fixtures nuevos, predicciones y métricas. |
+| `reentrenamiento` | Lunes 05:00 UTC | Reentrena con los resultados acumulados. |
+
+Las tres se pueden lanzar a mano desde la pestaña **Actions → Mantenimiento → Run workflow**.
+
+Secretos a cargar en **Settings → Secrets and variables → Actions**:
+
+`DATABASE_URL` (la *External Database URL* del dashboard de Render, no la interna), `SECRET_KEY`,
+`CLAVE_CIFRADO_DATOS`, `CLAVE_INDICE_CIEGO`, `FOOTBALL_DATA_TOKEN` y opcionalmente
+`API_FOOTBALL_KEY`.
+
+> Las tres claves de cifrado tienen que ser **idénticas** a las del servicio web: comparten base, y
+> si difieren, los emails que guarda un lado son ilegibles para el otro — sin error, solo datos que
+> no aparecen.
+
+> Los horarios de GitHub Actions no son exactos: bajo carga una corrida puede demorarse. Para
+> trabajo diario da igual, y todos los comandos son idempotentes.
 
 ### Por qué los artefactos van a la base
 
 Los `.joblib` del modelo se guardan **también** en `versiones_modelo.artefacto_modelo`, no solo en
-disco. En Render el job que entrena y el servicio web son máquinas distintas, y el disco de cada
-una se reinicia con el proceso: un artefacto que viviera solo en disco nunca llegaría a la API, y
+disco. El job que entrena y el servicio web son máquinas distintas, y el disco de cada una se
+reinicia con el proceso: un artefacto que viviera solo en disco nunca llegaría a la API, y
 `/veredicto` devolvería 409 para siempre. El disco queda como caché — se rehidrata desde la base la
 primera vez que hace falta. Son pocos KB (2,5 KB el clasificador, 6,5 KB el Poisson).
 
 Notas del plan gratuito:
 
 - El servicio web se duerme por inactividad, así que el APScheduler embebido no correría de forma
-  confiable. Por eso `SCHEDULER_ACTIVO=false` y todo el trabajo va por **cron jobs** de Render.
+  confiable. Por eso `SCHEDULER_ACTIVO=false` y todo el trabajo periódico va por GitHub Actions.
+- La URL de la base se normaliza sola a `postgresql+psycopg://`: Render la inyecta sin driver, y
+  SQLAlchemy 2 resolvería eso a psycopg2, que este proyecto no instala.
 - Render provee HTTPS automáticamente; `COOKIE_SEGURA=true` y HSTS quedan activos.
 - La base gratuita de Render expira a los 90 días. Con 30.000 partidos se entra cómodo en 1 GB.
 

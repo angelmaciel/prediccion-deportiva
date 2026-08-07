@@ -1,0 +1,93 @@
+# Trabajo periodico del proyecto: carga inicial, sincronizacion y reentrenamiento.
+#
+# Por que aca y no en Render: Render no tiene plan gratuito para servicios de
+# tipo `cron` — se facturan por minuto desde Starter. GitHub Actions es gratis
+# en repositorios publicos, deja el historial de cada corrida a la vista y se
+# versiona junto al codigo. Corre contra la URL *externa* de la base de Render.
+#
+# Los horarios de GitHub Actions no son exactos: bajo carga una corrida puede
+# demorarse. Para trabajo diario da igual, y todos los comandos son
+# idempotentes, asi que una corrida tarde o repetida no rompe nada.
+
+name: Mantenimiento
+
+on:
+  schedule:
+    # Carga inicial (idempotente: no hace nada si ya esta todo cargado).
+    - cron: "0 4 * * *"
+    # Sincronizacion de resultados y fixtures + predicciones nuevas.
+    - cron: "0 6 * * *"
+    # Reentrenamiento semanal, los lunes.
+    - cron: "0 5 * * 1"
+  workflow_dispatch:
+    inputs:
+      tarea:
+        description: Que ejecutar
+        required: true
+        default: bootstrap
+        type: choice
+        options: [bootstrap, sincronizacion, reentrenamiento]
+
+concurrency:
+  # Dos corridas a la vez sobre la misma base se pisarian entre si.
+  group: mantenimiento
+  cancel-in-progress: false
+
+jobs:
+  ejecutar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    env:
+      # La externa, no la interna: Actions corre fuera de la red de Render.
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      ENTORNO: production
+      DEBUG: "false"
+      COOKIE_SEGURA: "true"
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      CLAVE_CIFRADO_DATOS: ${{ secrets.CLAVE_CIFRADO_DATOS }}
+      CLAVE_INDICE_CIEGO: ${{ secrets.CLAVE_INDICE_CIEGO }}
+      FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+      API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Instalar dependencias
+        run: pip install -r backend/requirements.txt
+
+      - name: Elegir la tarea
+        id: tarea
+        run: |
+          case "${{ github.event.schedule || format('manual:{0}', inputs.tarea) }}" in
+            "0 4 * * *"|"manual:bootstrap")        echo "cual=bootstrap" >> "$GITHUB_OUTPUT" ;;
+            "0 6 * * *"|"manual:sincronizacion")   echo "cual=sincronizacion" >> "$GITHUB_OUTPUT" ;;
+            "0 5 * * 1"|"manual:reentrenamiento")  echo "cual=reentrenamiento" >> "$GITHUB_OUTPUT" ;;
+            *) echo "Disparador no reconocido"; exit 1 ;;
+          esac
+
+      - name: Carga inicial
+        if: steps.tarea.outputs.cual == 'bootstrap'
+        working-directory: backend
+        run: python manage.py bootstrap
+
+      - name: Sincronizacion diaria
+        if: steps.tarea.outputs.cual == 'sincronizacion'
+        working-directory: backend
+        run: |
+          python manage.py sincronizar
+          python manage.py predecir
+          python manage.py metricas
+
+      - name: Reentrenamiento semanal
+        if: steps.tarea.outputs.cual == 'reentrenamiento'
+        working-directory: backend
+        run: |
+          python manage.py entrenar
+          python manage.py predecir

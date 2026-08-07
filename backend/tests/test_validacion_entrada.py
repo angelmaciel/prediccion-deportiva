@@ -188,3 +188,35 @@ class TestRateLimiting:
                 "/auth/login", json={"email": "usuario@ejemplo.py", "password": "Incorrecta123"}
             )
         assert iniciar_sesion(cliente, "usuario@ejemplo.py").status_code == 429
+
+
+class TestUrlDeBaseDeDatos:
+    """Render y otros PaaS inyectan la URL sin driver; el engine no arranca asi."""
+
+    @pytest.mark.parametrize(
+        "inyectada,esperada",
+        [
+            (
+                "postgres://u:p@host:5432/db",
+                "postgresql+psycopg://u:p@host:5432/db",
+            ),
+            (
+                "postgresql://u:p@host:5432/db",
+                "postgresql+psycopg://u:p@host:5432/db",
+            ),
+            (
+                "postgresql+psycopg://u:p@host:5432/db",
+                "postgresql+psycopg://u:p@host:5432/db",
+            ),
+        ],
+    )
+    def test_se_fuerza_el_driver_psycopg(self, inyectada, esperada):
+        from app.core.config import Config
+
+        assert Config(database_url=inyectada).database_url == esperada
+
+    def test_no_toca_sqlite(self):
+        """Los tests corren sobre SQLite: el normalizador no debe alcanzarlo."""
+        from app.core.config import Config
+
+        assert Config(database_url="sqlite:///:memory:").database_url == "sqlite:///:memory:"
