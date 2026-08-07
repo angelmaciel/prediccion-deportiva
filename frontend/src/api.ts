@@ -15,6 +15,7 @@ import type {
   Proveedores,
   ResumenModelo,
   Usuario,
+  Veredicto,
   VersionModelo,
 } from './tipos'
 
@@ -73,6 +74,8 @@ export const api = {
     pedir<PaginaPartidos>(`/partidos${query({ ...params, por_pagina: 20 })}`),
 
   detallePartido: (id: number) => pedir<Partido>(`/partidos/${id}`),
+
+  veredicto: (id: number) => pedir<Veredicto>(`/partidos/${id}/veredicto`),
 
   h2h: (id: number, opciones: { solo_misma_localia?: boolean; liga?: string } = {}) =>
     pedir<HistorialH2H>(

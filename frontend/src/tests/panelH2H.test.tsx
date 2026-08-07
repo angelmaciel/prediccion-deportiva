@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { api } from '../api'
 import { PanelH2H } from '../componentes/PanelH2H'
 import { TarjetaPartido } from '../componentes/TarjetaPartido'
-import type { HistorialH2H, Partido } from '../tipos'
+import type { HistorialH2H, Partido, Veredicto } from '../tipos'
 
 const EQUIPO = (id: number, nombre: string) => ({
   id,
@@ -160,9 +160,51 @@ const HISTORIAL: HistorialH2H = {
   aviso_atajadas: AVISO,
 }
 
+const VEREDICTO: Veredicto = {
+  partido_id: 10,
+  resultado: 'L',
+  etiqueta: 'Gana el local',
+  probabilidad: 0.472,
+  confianza: 'media',
+  consenso: true,
+  prob_logistica: [0.48, 0.3, 0.22],
+  prob_poisson: [0.464, 0.28, 0.256],
+  marcador_probable: [1, 1],
+  prob_marcador_probable: 0.11,
+  factores: [
+    { nombre: 'Elo', detalle: '1612 contra 1498 (+114 para el local)', favorece: 'L' },
+    { nombre: 'Forma reciente', detalle: '10 contra 4 puntos en los ultimos 5', favorece: 'L' },
+  ],
+  escenarios_simples: [
+    {
+      claves: ['mas_1_5'],
+      etiqueta: 'Mas de 1.5 goles',
+      probabilidad: 0.81,
+      probabilidad_ingenua: null,
+      correlacion: null,
+    },
+  ],
+  escenarios_combinados: [
+    {
+      claves: ['local', 'mas_2_5'],
+      etiqueta: 'Gana el local + Mas de 2.5 goles',
+      probabilidad: 0.31,
+      probabilidad_ingenua: 0.24,
+      correlacion: 0.07,
+    },
+  ],
+  aviso: 'Un veredicto no es un pronostico ni una recomendacion.',
+}
+
+/** El panel abre en "Veredicto"; el historial vive en las otras pestanas. */
+async function verHistorial(usuario: ReturnType<typeof userEvent.setup>) {
+  await usuario.click(await screen.findByRole('tab', { name: 'Entre si' }))
+}
+
 describe('PanelH2H', () => {
   beforeEach(() => {
     vi.spyOn(api, 'h2h').mockResolvedValue(HISTORIAL)
+    vi.spyOn(api, 'veredicto').mockResolvedValue(VEREDICTO)
   })
 
   afterEach(() => {
@@ -170,7 +212,9 @@ describe('PanelH2H', () => {
   })
 
   it('muestra los promedios de cada equipo', async () => {
+    const usuario = userEvent.setup()
     render(<PanelH2H partido={PARTIDO} />)
+    await verHistorial(usuario)
     expect(await screen.findByText('Corners')).toBeInTheDocument()
     expect(screen.getByText('7.50')).toBeInTheDocument()
     expect(screen.getByText('4.00')).toBeInTheDocument()
@@ -178,25 +222,32 @@ describe('PanelH2H', () => {
   })
 
   it('no inventa ceros cuando la fuente no trae el dato', async () => {
+    const usuario = userEvent.setup()
     render(<PanelH2H partido={PARTIDO} />)
+    await verHistorial(usuario)
     await screen.findByText('Remates')
     // Chelsea no tiene remates ni remates al arco ni atajadas: tres guiones.
     expect(screen.getAllByTitle(/no publica este dato/i)).toHaveLength(3)
   })
 
   it('avisa que las atajadas son estimadas', async () => {
+    const usuario = userEvent.setup()
     render(<PanelH2H partido={PARTIDO} />)
+    await verHistorial(usuario)
     expect(await screen.findByText(new RegExp(AVISO, 'i'))).toBeInTheDocument()
   })
 
   it('aclara cuantos cruces tienen estadisticas', async () => {
+    const usuario = userEvent.setup()
     render(<PanelH2H partido={PARTIDO} />)
+    await verHistorial(usuario)
     expect(await screen.findByText(/estadisticas en 2 de ellos/i)).toBeInTheDocument()
   })
 
   it('vuelve a pedir el historial al filtrar por localia', async () => {
     const usuario = userEvent.setup()
     render(<PanelH2H partido={PARTIDO} />)
+    await verHistorial(usuario)
     await screen.findByText('Corners')
 
     await usuario.click(screen.getByLabelText(/solo con esta localia/i))
@@ -212,6 +263,7 @@ describe('PanelH2H', () => {
   it('vuelve a pedir el historial al filtrar por liga', async () => {
     const usuario = userEvent.setup()
     render(<PanelH2H partido={PARTIDO} />)
+    await verHistorial(usuario)
     await screen.findByText('Corners')
 
     await usuario.click(screen.getByLabelText(/solo premier league/i))
@@ -225,18 +277,22 @@ describe('PanelH2H', () => {
   })
 
   it('explica cuando no hay enfrentamientos previos', async () => {
+    const usuario = userEvent.setup()
     vi.spyOn(api, 'h2h').mockResolvedValue({
       ...HISTORIAL,
       total_cruces: 0,
       cruces: [],
     })
     render(<PanelH2H partido={PARTIDO} />)
+    await verHistorial(usuario)
     expect(await screen.findByText(/no hay enfrentamientos previos/i)).toBeInTheDocument()
   })
 
   it('avisa si la consulta falla', async () => {
+    const usuario = userEvent.setup()
     vi.spyOn(api, 'h2h').mockRejectedValue(new Error('sin red'))
     render(<PanelH2H partido={PARTIDO} />)
+    await verHistorial(usuario)
     expect(await screen.findByText(/no se pudo cargar el historial/i)).toBeInTheDocument()
   })
 })
@@ -244,24 +300,26 @@ describe('PanelH2H', () => {
 describe('PanelH2H: racha de cada equipo', () => {
   beforeEach(() => {
     vi.spyOn(api, 'h2h').mockResolvedValue(HISTORIAL)
+    vi.spyOn(api, 'veredicto').mockResolvedValue(VEREDICTO)
   })
 
   afterEach(() => {
     vi.restoreAllMocks()
   })
 
-  it('arranca mostrando el cara a cara', async () => {
+  it('arranca mostrando el veredicto', async () => {
     render(<PanelH2H partido={PARTIDO} />)
-    await screen.findByText('Corners')
-    expect(screen.getByRole('tab', { name: 'Entre si' })).toHaveAttribute('aria-selected', 'true')
+    expect(await screen.findByText('Gana el local')).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Veredicto' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    )
   })
 
   it('muestra los partidos contra otros rivales al cambiar de pestana', async () => {
     const usuario = userEvent.setup()
     render(<PanelH2H partido={PARTIDO} />)
-    await screen.findByText('Corners')
-
-    await usuario.click(screen.getByRole('tab', { name: 'ARS' }))
+    await usuario.click(await screen.findByRole('tab', { name: 'ARS' }))
 
     expect(await screen.findByText(/everton/i)).toBeInTheDocument()
     expect(screen.getByText(/fulham/i)).toBeInTheDocument()
@@ -271,9 +329,7 @@ describe('PanelH2H: racha de cada equipo', () => {
   it('distingue si el equipo jugo de local o de visitante', async () => {
     const usuario = userEvent.setup()
     render(<PanelH2H partido={PARTIDO} />)
-    await screen.findByText('Corners')
-
-    await usuario.click(screen.getByRole('tab', { name: 'ARS' }))
+    await usuario.click(await screen.findByRole('tab', { name: 'ARS' }))
 
     // Everton fue de local y Fulham de visitante. La marca (L)/(V) vive en un
     // span aparte, asi que se mira el texto de la fila entera.
@@ -284,9 +340,7 @@ describe('PanelH2H: racha de cada equipo', () => {
   it('explica cuando el equipo no tiene partidos previos', async () => {
     const usuario = userEvent.setup()
     render(<PanelH2H partido={PARTIDO} />)
-    await screen.findByText('Corners')
-
-    await usuario.click(screen.getByRole('tab', { name: 'CHE' }))
+    await usuario.click(await screen.findByRole('tab', { name: 'CHE' }))
 
     expect(await screen.findByText(/no hay partidos previos de chelsea/i)).toBeInTheDocument()
   })
@@ -295,6 +349,7 @@ describe('PanelH2H: racha de cada equipo', () => {
 describe('TarjetaPartido con historial', () => {
   beforeEach(() => {
     vi.spyOn(api, 'h2h').mockResolvedValue(HISTORIAL)
+    vi.spyOn(api, 'veredicto').mockResolvedValue(VEREDICTO)
   })
 
   afterEach(() => {
@@ -315,7 +370,7 @@ describe('TarjetaPartido con historial', () => {
 
     await usuario.click(boton)
 
-    expect(await screen.findByText('Corners')).toBeInTheDocument()
+    expect(await screen.findByRole('tab', { name: 'Veredicto' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /ocultar historial/i })).toHaveAttribute(
       'aria-expanded',
       'true',
