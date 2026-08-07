@@ -29,7 +29,7 @@ on:
         # `admin` no tiene horario: se corre a mano una vez, al desplegar. No
         # forma parte de `bootstrap` a proposito — ese corre todos los dias y
         # reescribiria la contrasena del admin en cada corrida.
-        options: [bootstrap, sincronizacion, reentrenamiento, admin]
+        options: [bootstrap, sincronizacion, reentrenamiento, admin, fusionar]
 
 concurrency:
   # Dos corridas a la vez sobre la misma base se pisarian entre si.
@@ -73,6 +73,7 @@ jobs:
             "0 6 * * *"|"manual:sincronizacion")   echo "cual=sincronizacion" >> "$GITHUB_OUTPUT" ;;
             "0 5 * * 1"|"manual:reentrenamiento")  echo "cual=reentrenamiento" >> "$GITHUB_OUTPUT" ;;
             "manual:admin")                        echo "cual=admin" >> "$GITHUB_OUTPUT" ;;
+            "manual:fusionar")                     echo "cual=fusionar" >> "$GITHUB_OUTPUT" ;;
             *) echo "Disparador no reconocido"; exit 1 ;;
           esac
 
@@ -94,6 +95,18 @@ jobs:
         working-directory: backend
         run: |
           python manage.py entrenar
+          python manage.py predecir
+
+      # Reparacion puntual para bases cargadas antes de que la sincronizacion
+      # reconciliara nombres entre fuentes. Une los clubes que quedaron
+      # duplicados y vuelve a predecir, porque las predicciones viejas se
+      # calcularon sobre el registro vacio del club.
+      - name: Fusionar equipos duplicados
+        if: steps.tarea.outputs.cual == 'fusionar'
+        working-directory: backend
+        run: |
+          python manage.py fusionar-equipos
+          python manage.py fusionar-equipos --aplicar
           python manage.py predecir
 
       # Crear el primer administrador. Se corre a mano una sola vez: `bootstrap`

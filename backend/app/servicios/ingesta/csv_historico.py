@@ -258,7 +258,43 @@ def _indice_equipos(db: Session, pais: str) -> list[tuple[list[str], Equipo]]:
     "Champions League". El pais, en cambio, no se sobrescribe nunca.
     """
     equipos = db.execute(select(Equipo).where(Equipo.pais == pais)).scalars().all()
-    return [(_tokens(e.nombre), e) for e in equipos]
+    # El alias se aplica tambien a lo que ya esta guardado, no solo al nombre
+    # que entra. Si no, la tabla solo sirve en un sentido: el CSV dice "Wolves"
+    # y la API "Wolverhampton Wanderers FC", y sin normalizar los dos lados no
+    # se reconocen, con lo que el club queda partido en dos registros.
+    return [(_tokens(ALIAS_CRUDO.get(normalizar(e.nombre), e.nombre)), e) for e in equipos]
+
+
+def clave_club(nombre: str) -> str:
+    """Firma normalizada de un club: dos nombres con la misma firma son el mismo.
+
+    Es mas estricta que `_resolver`, que acepta palabras de sobra. Sirve para
+    agrupar sin riesgo lo que ya esta guardado, no para reconciliar nombres
+    nuevos.
+    """
+    return " ".join(sorted(_tokens(ALIAS_CRUDO.get(normalizar(nombre), nombre))))
+
+
+def buscar_equipo_existente(db: Session, nombre: str, pais: str) -> Equipo | None:
+    """Busca un club ya cargado que sea el mismo, aunque la fuente lo nombre distinto.
+
+    El indice se cachea en la sesion: sin eso habria una consulta por equipo y
+    por partido, que es justo lo que hacia inviable la carga inicial.
+    """
+    cache = db.info.setdefault("indice_equipos", {})
+    if pais not in cache:
+        cache[pais] = _indice_equipos(db, pais)
+    equipo, _ = _resolver(nombre, cache[pais])
+    return equipo
+
+
+def recordar_equipo(db: Session, equipo: Equipo) -> None:
+    """Suma un equipo recien creado al indice cacheado."""
+    cache = db.info.get("indice_equipos")
+    if cache is not None and equipo.pais in cache:
+        cache[equipo.pais].append(
+            (_tokens(ALIAS_CRUDO.get(normalizar(equipo.nombre), equipo.nombre)), equipo)
+        )
 
 
 def _resolver(
