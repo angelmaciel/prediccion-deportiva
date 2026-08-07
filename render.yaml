@@ -40,14 +40,18 @@ services:
         fromDatabase:
           name: prediccion-db
           property: connectionString
-      # Generados por Render la primera vez y persistidos entre deploys.
+      # Las tres se cargan a mano y tienen que ser IDENTICAS a los secretos de
+      # GitHub Actions: los jobs comparten esta base. Por eso no se usa
+      # `generateValue` — obligaria a desplegar, buscar el valor generado en el
+      # dashboard y copiarlo, y una divergencia no da error: los emails que
+      # cifra un lado simplemente no los puede leer el otro.
       - key: SECRET_KEY
-        generateValue: true
-      # Deben cargarse a mano: requieren formato especifico (32 bytes en base64).
+        sync: false
+      # 32 bytes en base64, no una cadena cualquiera.
       - key: CLAVE_CIFRADO_DATOS
         sync: false
       - key: CLAVE_INDICE_CIEGO
-        generateValue: true
+        sync: false
       - key: ORIGENES_PERMITIDOS
         value: https://prediccion-web.onrender.com
       - key: URL_FRONTEND
