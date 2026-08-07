@@ -22,6 +22,7 @@ from app.esquemas import (
     PrediccionSalida,
     PromediosH2H,
     RachaEquipo,
+    SenialSalida,
     VeredictoSalida,
 )
 from app.ml.mercados import ResultadoEscenario
@@ -208,7 +209,7 @@ def veredicto_partido(
 
     try:
         modelo, _version = modelo_activo(db)
-        veredicto = construir_veredicto(partido, modelo)
+        veredicto = construir_veredicto(partido, modelo, db=db)
     except (ModeloNoDisponible, SinModelo) as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
 
@@ -233,6 +234,10 @@ def veredicto_partido(
         ],
         escenarios_simples=[_a_escenario(e) for e in veredicto.escenarios_simples],
         escenarios_combinados=[_a_escenario(e) for e in veredicto.escenarios_combinados],
+        senales=[
+            SenialSalida(nombre=s.nombre, detalle=s.detalle, favorece=s.favorece, peso=s.peso)
+            for s in veredicto.senales
+        ],
     )
 
 

@@ -146,6 +146,14 @@ export interface Escenario {
   correlacion: number | null
 }
 
+/** Lectura de un analizador propio, no del modelo entrenado. */
+export interface Senial {
+  nombre: string
+  detalle: string
+  favorece: 'L' | 'V' | '-'
+  peso: number
+}
+
 export interface Veredicto {
   partido_id: number
   resultado: 'L' | 'E' | 'V'
@@ -160,6 +168,7 @@ export interface Veredicto {
   factores: Factor[]
   escenarios_simples: Escenario[]
   escenarios_combinados: Escenario[]
+  senales: Senial[]
   aviso: string
 }
 

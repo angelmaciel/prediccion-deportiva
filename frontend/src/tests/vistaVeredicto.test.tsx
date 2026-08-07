@@ -62,6 +62,14 @@ const VEREDICTO: Veredicto = {
       correlacion: 0.07,
     },
   ],
+  senales: [
+    {
+      nombre: 'Presion ofensiva',
+      detalle: '6.1 contra 3.4 remates al arco por partido',
+      favorece: 'L',
+      peso: 0.7,
+    },
+  ],
   aviso: 'Un veredicto no es un pronostico ni una recomendacion.',
 }
 
@@ -120,6 +128,20 @@ describe('VistaVeredicto', () => {
   it('deja claro que no es una recomendacion', async () => {
     render(<VistaVeredicto partido={PARTIDO} />)
     expect(await screen.findByText(/no es un pronostico ni una recomendacion/i)).toBeInTheDocument()
+  })
+
+  it('muestra el analisis propio separado del modelo', async () => {
+    render(<VistaVeredicto partido={PARTIDO} />)
+    expect(await screen.findByText('Analisis propio')).toBeInTheDocument()
+    expect(screen.getByText('Presion ofensiva')).toBeInTheDocument()
+    expect(screen.getByText(/no mueven las probabilidades del modelo/i)).toBeInTheDocument()
+  })
+
+  it('oculta la seccion si no hay analisis propios', async () => {
+    vi.spyOn(api, 'veredicto').mockResolvedValue({ ...VEREDICTO, senales: [] })
+    render(<VistaVeredicto partido={PARTIDO} />)
+    await screen.findByText('Gana el local')
+    expect(screen.queryByText('Analisis propio')).not.toBeInTheDocument()
   })
 
   it('explica cuando todavia no hay veredicto', async () => {

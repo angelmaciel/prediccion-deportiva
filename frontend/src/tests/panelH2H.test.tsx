@@ -193,6 +193,14 @@ const VEREDICTO: Veredicto = {
       correlacion: 0.07,
     },
   ],
+  senales: [
+    {
+      nombre: 'Presion ofensiva',
+      detalle: '6.1 contra 3.4 remates al arco por partido',
+      favorece: 'L',
+      peso: 0.7,
+    },
+  ],
   aviso: 'Un veredicto no es un pronostico ni una recomendacion.',
 }
 

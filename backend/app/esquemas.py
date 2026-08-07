@@ -350,6 +350,15 @@ class EscenarioSalida(BaseModel):
     correlacion: float | None = None
 
 
+class SenialSalida(BaseModel):
+    """Lectura de un analizador propio, no del modelo entrenado."""
+
+    nombre: str
+    detalle: str
+    favorece: str = Field(pattern=r"^[LV-]$")
+    peso: float
+
+
 class VeredictoSalida(BaseModel):
     partido_id: int
     resultado: str = Field(pattern=r"^[LEV]$")
@@ -364,4 +373,5 @@ class VeredictoSalida(BaseModel):
     factores: list[FactorSalida]
     escenarios_simples: list[EscenarioSalida]
     escenarios_combinados: list[EscenarioSalida]
+    senales: list[SenialSalida] = []
     aviso: str = AVISO_VEREDICTO
