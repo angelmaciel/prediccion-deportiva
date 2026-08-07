@@ -20,7 +20,13 @@ from app.modelos.futbol import (
     Partido,
     Resultado,
 )
-from app.servicios.h2h import con_estadisticas, enfrentamientos_previos, resumir
+from app.servicios.h2h import (
+    con_estadisticas,
+    desde_la_optica_de,
+    enfrentamientos_previos,
+    resumir,
+    ultimos_partidos,
+)
 
 BASE = datetime(2026, 1, 1, tzinfo=timezone.utc)
 
@@ -234,6 +240,98 @@ class TestResumen:
         actual = _partido(db, alfa, beta, dias=0, estado=EstadoPartido.PROGRAMADO)
         previos = enfrentamientos_previos(db, actual)
         assert resumir(previos, alfa.id, "Alfa").metricas["atajadas"].promedio == 0.0
+
+
+class TestRachaReciente:
+    """Ultimos partidos de un equipo contra cualquier rival, no solo contra este."""
+
+    @pytest.fixture
+    def tercero(self, db):
+        equipo = Equipo(
+            nombre="Gamma",
+            liga="Premier League",
+            pais="Inglaterra",
+            fuente=Fuente.CSV_HISTORICO,
+            external_id="eq-3",
+        )
+        db.add(equipo)
+        db.flush()
+        return equipo
+
+    def test_incluye_partidos_contra_otros_rivales(self, db, equipos, tercero):
+        alfa, beta = equipos
+        _partido(db, alfa, beta, dias=-20)
+        _partido(db, alfa, tercero, dias=-10)
+        actual = _partido(db, alfa, beta, dias=0, estado=EstadoPartido.PROGRAMADO)
+
+        previos = ultimos_partidos(db, alfa.id, actual.fecha)
+        assert len(previos) == 2
+
+    def test_filtra_por_localia(self, db, equipos, tercero):
+        alfa, beta = equipos
+        _partido(db, alfa, tercero, dias=-20)  # Alfa de local
+        _partido(db, tercero, alfa, dias=-10)  # Alfa de visitante
+        actual = _partido(db, alfa, beta, dias=0, estado=EstadoPartido.PROGRAMADO)
+
+        de_local = ultimos_partidos(db, alfa.id, actual.fecha, localia="local")
+        de_visitante = ultimos_partidos(db, alfa.id, actual.fecha, localia="visitante")
+        assert len(de_local) == 1
+        assert de_local[0].equipo_local_id == alfa.id
+        assert len(de_visitante) == 1
+        assert de_visitante[0].equipo_visitante_id == alfa.id
+
+    def test_respeta_el_limite(self, db, equipos, tercero):
+        alfa, beta = equipos
+        for dia in range(1, 8):
+            _partido(db, alfa, tercero, dias=-dia)
+        actual = _partido(db, alfa, beta, dias=0, estado=EstadoPartido.PROGRAMADO)
+
+        assert len(ultimos_partidos(db, alfa.id, actual.fecha, limite=3)) == 3
+
+    def test_optica_del_equipo(self, db, equipos, tercero):
+        """Un 0-2 de visitante es una derrota, no un 'goles_local 0'."""
+        alfa, beta = equipos
+        _partido(db, tercero, alfa, dias=-10, goles=(0, 2))
+        actual = _partido(db, alfa, beta, dias=0, estado=EstadoPartido.PROGRAMADO)
+
+        vista = desde_la_optica_de(ultimos_partidos(db, alfa.id, actual.fecha)[0], alfa.id)
+        assert vista["rival"] == "Gamma"
+        assert vista["de_local"] is False
+        assert (vista["goles_favor"], vista["goles_contra"]) == (2, 0)
+        assert vista["resultado"] == "G"
+
+    def test_el_endpoint_devuelve_las_dos_rachas(self, cliente, db, equipos, tercero):
+        alfa, beta = equipos
+        _partido(db, alfa, tercero, dias=-20, goles=(3, 0))
+        _partido(db, tercero, beta, dias=-15, goles=(2, 1))
+        actual = _partido(db, alfa, beta, dias=5, estado=EstadoPartido.PROGRAMADO)
+        db.commit()
+
+        cuerpo = cliente.get(f"/partidos/{actual.id}/h2h").json()
+        assert cuerpo["racha_local"]["nombre"] == "Alfa"
+        assert cuerpo["racha_local"]["ganados"] == 1
+        assert cuerpo["racha_local"]["partidos"][0]["rival"] == "Gamma"
+        assert cuerpo["racha_visitante"]["nombre"] == "Beta"
+        assert cuerpo["racha_visitante"]["perdidos"] == 1
+        assert cuerpo["racha_visitante"]["partidos"][0]["resultado"] == "P"
+
+    def test_el_filtro_de_localia_mira_a_cada_equipo_en_su_condicion(
+        self, cliente, db, equipos, tercero
+    ):
+        """Con el filtro puesto: el local solo de local, el visitante solo de visitante."""
+        alfa, beta = equipos
+        _partido(db, alfa, tercero, dias=-20)  # Alfa de local: cuenta
+        _partido(db, tercero, alfa, dias=-19)  # Alfa de visitante: no cuenta
+        _partido(db, tercero, beta, dias=-18)  # Beta de visitante: cuenta
+        _partido(db, beta, tercero, dias=-17)  # Beta de local: no cuenta
+        actual = _partido(db, alfa, beta, dias=5, estado=EstadoPartido.PROGRAMADO)
+        db.commit()
+
+        cuerpo = cliente.get(f"/partidos/{actual.id}/h2h?solo_misma_localia=true").json()
+        assert cuerpo["racha_local"]["jugados"] == 1
+        assert cuerpo["racha_local"]["partidos"][0]["de_local"] is True
+        assert cuerpo["racha_visitante"]["jugados"] == 1
+        assert cuerpo["racha_visitante"]["partidos"][0]["de_local"] is False
 
 
 class TestEndpoint:

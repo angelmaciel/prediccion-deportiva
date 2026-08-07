@@ -90,6 +90,73 @@ const HISTORIAL: HistorialH2H = {
       tiene_estadisticas: true,
     },
   ],
+  racha_local: {
+    equipo_id: 1,
+    nombre: 'Arsenal',
+    jugados: 3,
+    ganados: 2,
+    empatados: 0,
+    perdidos: 1,
+    partidos_con_estadisticas: 3,
+    promedios: {
+      goles_favor: 1.67,
+      goles_contra: 1.0,
+      remates: 14.0,
+      remates_arco: 5.0,
+      corners: 6.0,
+      faltas: 10.0,
+      amarillas: 1.0,
+      rojas: 0,
+      atajadas: 3.0,
+    },
+    partidos: [
+      {
+        partido_id: 21,
+        fecha: '2026-08-20T15:00:00Z',
+        liga: 'Premier League',
+        temporada: '26/27',
+        rival: 'Everton',
+        de_local: true,
+        goles_favor: 2,
+        goles_contra: 0,
+        resultado: 'G',
+        tiene_estadisticas: true,
+      },
+      {
+        partido_id: 22,
+        fecha: '2026-08-13T15:00:00Z',
+        liga: 'Premier League',
+        temporada: '26/27',
+        rival: 'Fulham',
+        de_local: false,
+        goles_favor: 1,
+        goles_contra: 3,
+        resultado: 'P',
+        tiene_estadisticas: true,
+      },
+    ],
+  },
+  racha_visitante: {
+    equipo_id: 2,
+    nombre: 'Chelsea',
+    jugados: 0,
+    ganados: 0,
+    empatados: 0,
+    perdidos: 0,
+    partidos_con_estadisticas: 0,
+    promedios: {
+      goles_favor: null,
+      goles_contra: null,
+      remates: null,
+      remates_arco: null,
+      corners: null,
+      faltas: null,
+      amarillas: null,
+      rojas: null,
+      atajadas: null,
+    },
+    partidos: [],
+  },
   aviso_atajadas: AVISO,
 }
 
@@ -171,6 +238,57 @@ describe('PanelH2H', () => {
     vi.spyOn(api, 'h2h').mockRejectedValue(new Error('sin red'))
     render(<PanelH2H partido={PARTIDO} />)
     expect(await screen.findByText(/no se pudo cargar el historial/i)).toBeInTheDocument()
+  })
+})
+
+describe('PanelH2H: racha de cada equipo', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'h2h').mockResolvedValue(HISTORIAL)
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('arranca mostrando el cara a cara', async () => {
+    render(<PanelH2H partido={PARTIDO} />)
+    await screen.findByText('Corners')
+    expect(screen.getByRole('tab', { name: 'Entre si' })).toHaveAttribute('aria-selected', 'true')
+  })
+
+  it('muestra los partidos contra otros rivales al cambiar de pestana', async () => {
+    const usuario = userEvent.setup()
+    render(<PanelH2H partido={PARTIDO} />)
+    await screen.findByText('Corners')
+
+    await usuario.click(screen.getByRole('tab', { name: 'ARS' }))
+
+    expect(await screen.findByText(/everton/i)).toBeInTheDocument()
+    expect(screen.getByText(/fulham/i)).toBeInTheDocument()
+    expect(screen.getByText(/promedios de arsenal/i)).toBeInTheDocument()
+  })
+
+  it('distingue si el equipo jugo de local o de visitante', async () => {
+    const usuario = userEvent.setup()
+    render(<PanelH2H partido={PARTIDO} />)
+    await screen.findByText('Corners')
+
+    await usuario.click(screen.getByRole('tab', { name: 'ARS' }))
+
+    // Everton fue de local y Fulham de visitante. La marca (L)/(V) vive en un
+    // span aparte, asi que se mira el texto de la fila entera.
+    expect((await screen.findByText(/everton/i)).closest('li')).toHaveTextContent('(L) Everton')
+    expect(screen.getByText(/fulham/i).closest('li')).toHaveTextContent('(V) Fulham')
+  })
+
+  it('explica cuando el equipo no tiene partidos previos', async () => {
+    const usuario = userEvent.setup()
+    render(<PanelH2H partido={PARTIDO} />)
+    await screen.findByText('Corners')
+
+    await usuario.click(screen.getByRole('tab', { name: 'CHE' }))
+
+    expect(await screen.findByText(/no hay partidos previos de chelsea/i)).toBeInTheDocument()
   })
 })
 
