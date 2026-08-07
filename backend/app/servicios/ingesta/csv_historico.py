@@ -26,7 +26,7 @@ from difflib import SequenceMatcher
 
 import httpx
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.modelos.futbol import (
     Equipo,
@@ -428,21 +428,56 @@ def importar_division(db: Session, division: str, temporada: str) -> ResultadoIm
     resultado = ResultadoImportacion()
     etiqueta = f"{temporada[:2]}/{temporada[2:]}"
 
-    for fila in filas:
-        local = _obtener_o_crear(db, fila.local, liga, pais, indice, resultado.equipos_creados)
-        visitante = _obtener_o_crear(
-            db, fila.visitante, liga, pais, indice, resultado.equipos_creados
-        )
-        externo = _external_id(division, fila)
-
-        partido = db.execute(
-            select(Partido).where(
-                Partido.fuente == Fuente.CSV_HISTORICO, Partido.external_id == externo
+    # Todo lo que ya exista de esta temporada, en una sola consulta.
+    #
+    # Antes se preguntaba partido por partido y se hacia flush en cada vuelta:
+    # unos 1500 viajes de ida y vuelta por archivo. Contra una base local eso no
+    # se nota, pero en produccion el proceso corre en un runner de GitHub y la
+    # base esta en Oregon: a ~100 ms por viaje, una temporada tardaba tres
+    # minutos y las ochenta no entraban en el limite de una hora del job.
+    externos = [_external_id(division, fila) for fila in filas]
+    existentes = {
+        p.external_id: p
+        for p in db.execute(
+            select(Partido)
+            .options(selectinload(Partido.estadisticas))
+            .where(
+                Partido.fuente == Fuente.CSV_HISTORICO,
+                Partido.external_id.in_(externos),
             )
-        ).scalar_one_or_none()
+        )
+        .scalars()
+        .all()
+    }
+
+    # Los equipos se resuelven todos juntos, antes de tocar un solo partido, y
+    # quedan cacheados por el nombre exacto del CSV.
+    #
+    # Son dos problemas en uno. El primero: `_resolver` no siempre reconoce a un
+    # equipo que esta en el indice — es intencional, ante un empate de parecido
+    # prefiere no adivinar — y entonces se preguntaba a la base una vez por cada
+    # partido que ese equipo jugara, unas 350 consultas por temporada para unos
+    # 20 clubes. El segundo: crear un equipo hace `flush`, y un flush a mitad
+    # del bucle obliga a volcar los partidos pendientes de a poco, con lo que se
+    # pierde el agrupado de los INSERT.
+    equipos: dict[str, Equipo] = {}
+    for nombre in {n for fila in filas for n in (fila.local, fila.visitante)}:
+        equipos[nombre] = _obtener_o_crear(
+            db, nombre, liga, pais, indice, resultado.equipos_creados
+        )
+
+    for fila, externo in zip(filas, externos, strict=True):
+        local = equipos[fila.local]
+        visitante = equipos[fila.visitante]
+
+        partido = existentes.get(externo)
         if partido is None:
             partido = Partido(fuente=Fuente.CSV_HISTORICO, external_id=externo)
             db.add(partido)
+            # Al diccionario tambien: si el CSV repitiera un external_id, la
+            # segunda vuelta tiene que actualizar el objeto recien creado y no
+            # insertar un duplicado.
+            existentes[externo] = partido
             resultado.partidos_nuevos += 1
         else:
             resultado.partidos_actualizados += 1
@@ -462,24 +497,29 @@ def importar_division(db: Session, division: str, temporada: str) -> ResultadoIm
             if fila.goles_local < fila.goles_visitante
             else Resultado.EMPATE
         )
-        db.flush()
-
         if fila.estadisticas:
-            _guardar_estadisticas(db, partido, fila.estadisticas)
+            _guardar_estadisticas(partido, fila.estadisticas)
 
+    # Un unico flush al final: SQLAlchemy agrupa los INSERT en pocas sentencias
+    # en vez de mandar uno por partido. Reimportar una temporada ya cargada no
+    # escribe nada, porque asignar el mismo valor no ensucia el objeto.
+    db.flush()
     return resultado
 
 
-def _guardar_estadisticas(db: Session, partido: Partido, valores: dict[str, int]) -> None:
-    registro = db.execute(
-        select(EstadisticasPartido).where(EstadisticasPartido.partido_id == partido.id)
-    ).scalar_one_or_none()
+def _guardar_estadisticas(partido: Partido, valores: dict[str, int]) -> None:
+    """Asigna por la relacion, no por `partido_id`.
+
+    Asi no hace falta que el partido ya tenga id, que era justamente lo que
+    obligaba a un flush por vuelta: SQLAlchemy resuelve la clave foranea sola
+    cuando vuelca todo junto.
+    """
+    registro = partido.estadisticas
     if registro is None:
-        registro = EstadisticasPartido(partido_id=partido.id)
-        db.add(registro)
+        registro = EstadisticasPartido()
+        partido.estadisticas = registro
     for campo, valor in valores.items():
         setattr(registro, campo, valor)
-    db.flush()
 
 
 def temporadas_recientes(cantidad: int, hasta: int | None = None) -> list[str]:

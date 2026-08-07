@@ -143,11 +143,14 @@ def cmd_bootstrap(temporadas: int = 10) -> int:
             select(func.count(Partido.id)).where(Partido.estado == EstadoPartido.FINALIZADO)
         ).scalar_one()
 
-        if finalizados < obtener_config().minimo_partidos_entrenamiento:
-            log.info("Base sin historico (%d finalizados): importando CSV", finalizados)
-            importar_historico_csv(db, temporadas_recientes(temporadas))
-        else:
-            log.info("Historico ya cargado: %d partidos finalizados", finalizados)
+        # La importacion corre siempre, no solo con la base vacia. Un job que se
+        # corta por tiempo a la mitad deja miles de partidos de una o dos ligas,
+        # y el umbral de entrenamiento daria por cargado un historico al que en
+        # realidad le falta media Europa: el modelo entrenaria con eso y nadie
+        # se enteraria. Reimportar no duplica ni reescribe, asi que revisar todo
+        # de nuevo cuesta una consulta por temporada.
+        log.info("Historico: %d partidos finalizados antes de importar", finalizados)
+        importar_historico_csv(db, temporadas_recientes(temporadas))
 
         programados = db.execute(
             select(func.count(Partido.id)).where(Partido.estado == EstadoPartido.PROGRAMADO)
