@@ -89,8 +89,8 @@ export default function App() {
       <footer className="border-t border-pizarra-200 bg-white">
         <div className="mx-auto max-w-6xl space-y-2 px-4 py-6 text-xs text-pizarra-600">
           <p>
-            Proyecto de analisis estadistico de futbol. Las predicciones son estimaciones basadas
-            en datos historicos y <strong>no son garantias de resultado</strong>.
+            Proyecto de analisis estadistico de futbol. Las predicciones son estimaciones basadas en
+            datos historicos y <strong>no son garantias de resultado</strong>.
           </p>
           <p>
             No se gestionan apuestas ni pagos, y no hay enlaces a casas de apuestas. Datos de

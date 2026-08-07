@@ -16,6 +16,7 @@ from app.esquemas import (
     EscenarioSalida,
     FactorSalida,
     HistorialH2H,
+    NarrativaSalida,
     PaginaPartidos,
     PartidoDeRacha,
     PartidoSalida,
@@ -27,7 +28,7 @@ from app.esquemas import (
 )
 from app.ml.mercados import ResultadoEscenario
 from app.modelos.futbol import Equipo, EstadoPartido, Partido
-from app.modelos.prediccion import Prediccion
+from app.modelos.prediccion import NarrativaPartido, Prediccion
 from app.servicios.h2h import (
     LIMITE_POR_DEFECTO,
     ResumenEquipo,
@@ -186,6 +187,32 @@ def detalle_partido(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Partido no encontrado")
     predicciones = _ultimas_predicciones(db, [partido.id])
     return _a_salida(partido, predicciones.get(partido.id))
+
+
+@router.get("/{partido_id}/narrativa", response_model=NarrativaSalida)
+def narrativa_partido(
+    request: Request, partido_id: int, db: Session = Depends(obtener_db)
+) -> NarrativaSalida:
+    """Analisis en prosa del partido, si ya fue generado.
+
+    Solo lee. Generarlo cuesta dinero por token, asi que se hace desde el job
+    o desde el panel de admin, nunca en una visita publica.
+    """
+    narrativa = (
+        db.query(NarrativaPartido).filter(NarrativaPartido.partido_id == partido_id).one_or_none()
+    )
+    if narrativa is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Todavia no hay analisis narrativo para este partido",
+        )
+    return NarrativaSalida(
+        partido_id=narrativa.partido_id,
+        texto=narrativa.texto,
+        modelo=narrativa.modelo,
+        fuentes=narrativa.fuentes or [],
+        creado_en=narrativa.creado_en,
+    )
 
 
 def _a_escenario(escenario: ResultadoEscenario) -> EscenarioSalida:

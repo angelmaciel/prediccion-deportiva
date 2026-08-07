@@ -79,6 +79,21 @@ class Config(BaseSettings):
     # A donde vuelve el navegador despues del rodeo por Google.
     url_frontend: str = "http://localhost:5173"
 
+    # --- Analisis narrativo (Claude) ---
+    # Sin clave el endpoint responde 404 y la app funciona igual: la narrativa
+    # es un agregado opcional sobre el analisis estadistico, no un requisito.
+    anthropic_api_key: str = ""
+    anthropic_modelo: str = "claude-opus-5"
+    # low | medium | high | xhigh | max. Un analisis largo con juicio sobre
+    # datos que se contradicen justifica "high"; bajarlo abarata y acorta.
+    anthropic_esfuerzo: str = "high"
+    # Techo de salida por partido. Con busqueda web la respuesta puede tardar
+    # minutos, por eso el cliente usa streaming.
+    anthropic_max_tokens: int = 8000
+    # La busqueda web es lo que permite hablar de lesiones, sanciones y
+    # convocatorias: datos que la base no tiene. Se cobra aparte.
+    anthropic_busqueda_web: bool = True
+
     # --- Scheduler ---
     scheduler_activo: bool = False
     sincronizacion_cron_horas: str = "3,15"

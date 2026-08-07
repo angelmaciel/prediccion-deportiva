@@ -113,9 +113,7 @@ describe('VistaVeredicto', () => {
   it('compara la combinada contra multiplicar cada parte', async () => {
     render(<VistaVeredicto partido={PARTIDO} />)
     expect(await screen.findByText('Gana el local + Mas de 2.5 goles')).toBeInTheDocument()
-    expect(screen.getByText(/multiplicando cada parte por separado/i)).toHaveTextContent(
-      '24.0 %',
-    )
+    expect(screen.getByText(/multiplicando cada parte por separado/i)).toHaveTextContent('24.0 %')
   })
 
   it('no muestra la comparacion en los escenarios simples', async () => {

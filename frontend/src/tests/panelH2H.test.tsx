@@ -318,10 +318,7 @@ describe('PanelH2H: racha de cada equipo', () => {
   it('arranca mostrando el veredicto', async () => {
     render(<PanelH2H partido={PARTIDO} />)
     expect(await screen.findByText('Gana el local')).toBeInTheDocument()
-    expect(screen.getByRole('tab', { name: 'Veredicto' })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    )
+    expect(screen.getByRole('tab', { name: 'Veredicto' })).toHaveAttribute('aria-selected', 'true')
   })
 
   it('muestra los partidos contra otros rivales al cambiar de pestana', async () => {

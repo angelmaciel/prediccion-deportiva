@@ -12,6 +12,7 @@ from sqlalchemy import (
     Index,
     Integer,
     String,
+    Text,
     UniqueConstraint,
     func,
 )
@@ -57,6 +58,38 @@ class Prediccion(Base):
     @property
     def confianza(self) -> float:
         return max(self.prob_local, self.prob_empate, self.prob_visitante)
+
+
+class NarrativaPartido(Base):
+    """Analisis narrativo de un partido, escrito por un modelo de lenguaje.
+
+    Se persiste por dos razones. Una es de costo: cada narrativa se paga por
+    token, y regenerarla en cada visita seria tirar plata. La otra es de
+    auditoria: se guarda el modelo que la escribio y las fuentes que cito, para
+    poder revisar de donde salio cada afirmacion sobre lesiones o bajas.
+    """
+
+    __tablename__ = "narrativas_partido"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    partido_id: Mapped[int] = mapped_column(
+        ForeignKey("partidos.id", ondelete="CASCADE"), unique=True, index=True
+    )
+
+    texto: Mapped[str] = mapped_column(Text, nullable=False)
+    modelo: Mapped[str] = mapped_column(String(60), nullable=False)
+    # URLs que el modelo consulto para lo que la base no sabe (lesiones,
+    # sanciones, convocatorias). Vacio = escribio solo con datos propios.
+    fuentes: Mapped[list | None] = mapped_column(JSON, nullable=True)
+
+    tokens_entrada: Mapped[int] = mapped_column(Integer, default=0)
+    tokens_salida: Mapped[int] = mapped_column(Integer, default=0)
+
+    creado_en: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    partido: Mapped[Partido] = relationship()  # noqa: F821
 
 
 class VersionModelo(Base):

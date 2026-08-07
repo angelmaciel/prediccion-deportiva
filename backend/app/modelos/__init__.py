@@ -11,7 +11,12 @@ from app.modelos.futbol import (
     RatingElo,
     Resultado,
 )
-from app.modelos.prediccion import MetricaJornada, Prediccion, VersionModelo
+from app.modelos.prediccion import (
+    MetricaJornada,
+    NarrativaPartido,
+    Prediccion,
+    VersionModelo,
+)
 from app.modelos.usuarios import Proveedor, Rol, Sesion, Usuario
 
 __all__ = [
@@ -24,6 +29,7 @@ __all__ = [
     "Fuente",
     "LogAcceso",
     "MetricaJornada",
+    "NarrativaPartido",
     "Partido",
     "Prediccion",
     "Proveedor",

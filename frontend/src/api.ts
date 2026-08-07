@@ -10,6 +10,7 @@
 import type {
   HistorialH2H,
   MetricaJornada,
+  Narrativa,
   PaginaPartidos,
   Partido,
   Proveedores,
@@ -74,6 +75,8 @@ export const api = {
     pedir<PaginaPartidos>(`/partidos${query({ ...params, por_pagina: 20 })}`),
 
   detallePartido: (id: number) => pedir<Partido>(`/partidos/${id}`),
+
+  narrativa: (id: number) => pedir<Narrativa>(`/partidos/${id}/narrativa`),
 
   veredicto: (id: number) => pedir<Veredicto>(`/partidos/${id}/veredicto`),
 

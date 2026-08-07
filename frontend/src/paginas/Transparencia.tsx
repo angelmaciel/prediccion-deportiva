@@ -7,15 +7,7 @@ import { formatearFecha, porcentaje } from '../formato'
 import { usePeticion } from '../hooks/usePeticion'
 import type { MetricaJornada } from '../tipos'
 
-function Metrica({
-  titulo,
-  valor,
-  detalle,
-}: {
-  titulo: string
-  valor: string
-  detalle?: string
-}) {
+function Metrica({ titulo, valor, detalle }: { titulo: string; valor: string; detalle?: string }) {
   return (
     <div className="tarjeta">
       <p className="text-xs font-medium uppercase tracking-wide text-pizarra-400">{titulo}</p>
@@ -133,11 +125,9 @@ export default function Transparencia() {
               ) : r.accuracy_real > r.linea_base_local ? (
                 <>
                   El modelo acierta{' '}
-                  <strong>
-                    {porcentaje(r.accuracy_real - r.linea_base_local)} mas
-                  </strong>{' '}
-                  que la heuristica trivial de asumir siempre victoria local. La diferencia es
-                  chica en terminos absolutos: el futbol es un deporte de baja predictibilidad.
+                  <strong>{porcentaje(r.accuracy_real - r.linea_base_local)} mas</strong> que la
+                  heuristica trivial de asumir siempre victoria local. La diferencia es chica en
+                  terminos absolutos: el futbol es un deporte de baja predictibilidad.
                 </>
               ) : (
                 <>
@@ -167,11 +157,21 @@ export default function Transparencia() {
               <table className="w-full text-left text-sm">
                 <thead className="border-b border-pizarra-200 text-xs uppercase text-pizarra-400">
                   <tr>
-                    <th scope="col" className="py-2 pr-4">Liga</th>
-                    <th scope="col" className="py-2 pr-4">Fecha</th>
-                    <th scope="col" className="py-2 pr-4">Evaluados</th>
-                    <th scope="col" className="py-2 pr-4">Aciertos</th>
-                    <th scope="col" className="py-2">Precision</th>
+                    <th scope="col" className="py-2 pr-4">
+                      Liga
+                    </th>
+                    <th scope="col" className="py-2 pr-4">
+                      Fecha
+                    </th>
+                    <th scope="col" className="py-2 pr-4">
+                      Evaluados
+                    </th>
+                    <th scope="col" className="py-2 pr-4">
+                      Aciertos
+                    </th>
+                    <th scope="col" className="py-2">
+                      Precision
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -208,12 +208,24 @@ export default function Transparencia() {
             <table className="w-full text-left text-sm">
               <thead className="border-b border-pizarra-200 text-xs uppercase text-pizarra-400">
                 <tr>
-                  <th scope="col" className="py-2 pr-4">Version</th>
-                  <th scope="col" className="py-2 pr-4">Algoritmo</th>
-                  <th scope="col" className="py-2 pr-4">Entrenada</th>
-                  <th scope="col" className="py-2 pr-4">Partidos</th>
-                  <th scope="col" className="py-2 pr-4">Accuracy</th>
-                  <th scope="col" className="py-2">Estado</th>
+                  <th scope="col" className="py-2 pr-4">
+                    Version
+                  </th>
+                  <th scope="col" className="py-2 pr-4">
+                    Algoritmo
+                  </th>
+                  <th scope="col" className="py-2 pr-4">
+                    Entrenada
+                  </th>
+                  <th scope="col" className="py-2 pr-4">
+                    Partidos
+                  </th>
+                  <th scope="col" className="py-2 pr-4">
+                    Accuracy
+                  </th>
+                  <th scope="col" className="py-2">
+                    Estado
+                  </th>
                 </tr>
               </thead>
               <tbody>

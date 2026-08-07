@@ -130,6 +130,16 @@ export interface CruceH2H {
   tiene_estadisticas: boolean
 }
 
+/** Analisis en prosa escrito por un modelo de lenguaje. */
+export interface Narrativa {
+  partido_id: number
+  texto: string
+  modelo: string
+  fuentes: string[]
+  creado_en: string
+  aviso: string
+}
+
 /** Un dato observable que empuja el partido para un lado. */
 export interface Factor {
   nombre: string

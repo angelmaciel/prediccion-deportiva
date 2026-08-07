@@ -98,8 +98,8 @@ export function VistaVeredicto({ partido }: { partido: Partido }) {
   if (estado === 'error' || !datos) {
     return (
       <p className="mt-3 text-xs text-pizarra-500">
-        Todavia no hay un veredicto para este partido: hace falta un modelo entrenado y las
-        features calculadas.
+        Todavia no hay un veredicto para este partido: hace falta un modelo entrenado y las features
+        calculadas.
       </p>
     )
   }
@@ -110,9 +110,7 @@ export function VistaVeredicto({ partido }: { partido: Partido }) {
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <strong className="text-sm">{datos.etiqueta}</strong>
           <span className="flex items-center gap-2">
-            <span className="text-sm font-bold tabular-nums">
-              {porcentaje(datos.probabilidad)}
-            </span>
+            <span className="text-sm font-bold tabular-nums">{porcentaje(datos.probabilidad)}</span>
             <span className={`etiqueta ${COLOR_CONFIANZA[datos.confianza]}`}>
               confianza {datos.confianza}
             </span>

@@ -27,11 +27,12 @@ from app.esquemas import (
     ResumenEntrenamientoSalida,
 )
 from app.modelos.auditoria import ConsumoCuota, EjecucionJob, LogAcceso
-from app.modelos.futbol import Fuente
+from app.modelos.futbol import Fuente, Partido
 from app.modelos.usuarios import Usuario
 from app.servicios.entrenamiento import DatosInsuficientes, entrenar_modelo
 from app.servicios.ingesta.sincronizacion import sincronizar_todo
 from app.servicios.metricas import recalcular_metricas_por_jornada
+from app.servicios.narrativa import NarrativaNoDisponible, generar, guardar
 from app.servicios.predicciones import (
     ModeloNoDisponible,
     backfill_historico,
@@ -72,9 +73,7 @@ def entrenar(
     admin: Usuario = Depends(requerir_admin),
 ) -> ResumenEntrenamientoSalida:
     """Reentrena el modelo y lo valida walk-forward."""
-    registrar_acceso(
-        db, "admin_entrenar", request, usuario_id=admin.id, detalle=datos.algoritmo
-    )
+    registrar_acceso(db, "admin_entrenar", request, usuario_id=admin.id, detalle=datos.algoritmo)
     db.commit()
     try:
         resumen = entrenar_modelo(db, algoritmo=datos.algoritmo)
@@ -106,9 +105,7 @@ def predecir(
     try:
         creadas = generar_predicciones(db)
     except ModeloNoDisponible as exc:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail=str(exc)
-        ) from exc
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return MensajeSalida(mensaje=f"{creadas} predicciones generadas")
 
 
@@ -141,6 +138,48 @@ def recalcular_metricas(
     registrar_acceso(db, "admin_recalcular_metricas", request, usuario_id=admin.id)
     db.commit()
     return MensajeSalida(mensaje=f"{filas} jornadas recalculadas")
+
+
+@router.post("/narrativa/{partido_id}", response_model=MensajeSalida)
+@limiter.limit(LIMITE_ADMIN)
+def generar_narrativa(
+    request: Request,
+    partido_id: int,
+    db: Session = Depends(obtener_db),
+    admin: Usuario = Depends(requerir_admin),
+) -> MensajeSalida:
+    """Escribe el analisis narrativo de un partido.
+
+    Es admin y no publico porque cada llamada se paga por token: dejarlo
+    abierto seria dejar abierta la billetera.
+    """
+    partido = db.get(Partido, partido_id)
+    if partido is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Partido no encontrado")
+
+    try:
+        resultado = generar(db, partido)
+    except NarrativaNoDisponible as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+
+    guardar(db, partido, resultado)
+    registrar_acceso(
+        db,
+        "admin_narrativa",
+        request,
+        usuario_id=admin.id,
+        detalle=(
+            f"partido {partido_id}: {resultado.tokens_entrada}+{resultado.tokens_salida} tokens"
+        ),
+    )
+    db.commit()
+    return MensajeSalida(
+        mensaje=(
+            f"Narrativa generada con {resultado.modelo} "
+            f"({resultado.tokens_entrada} tokens de entrada, "
+            f"{resultado.tokens_salida} de salida, {len(resultado.fuentes)} fuentes)"
+        )
+    )
 
 
 @router.get("/cuotas", response_model=list[ConsumoCuotaSalida])
