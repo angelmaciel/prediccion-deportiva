@@ -36,7 +36,14 @@ from app.modelos import (  # noqa: F401  (registra las tablas)
     Usuario,
 )
 from app.servicios.entrenamiento import DatosInsuficientes, entrenar_modelo
-from app.servicios.ingesta.sincronizacion import calcular_resultado, sincronizar_todo
+from app.servicios.ingesta.csv_historico import DIVISIONES, temporadas_recientes
+from app.servicios.ingesta.sincronizacion import (
+    calcular_resultado,
+    importar_historico_csv,
+    sincronizar_europa,
+    sincronizar_paraguay,
+    sincronizar_todo,
+)
 from app.servicios.metricas import recalcular_metricas_por_jornada
 from app.servicios.predicciones import (
     ModeloNoDisponible,
@@ -85,10 +92,37 @@ def crear_admin(email: str | None = None, password: str | None = None) -> int:
         db.close()
 
 
-def cmd_sincronizar() -> int:
+def cmd_sincronizar(temporadas: str | None = None, europa_completo: bool = False) -> int:
     db = FabricaSesion()
     try:
-        log.info("Partidos sincronizados: %d", sincronizar_todo(db))
+        if not temporadas and not europa_completo:
+            log.info("Partidos sincronizados: %d", sincronizar_todo(db))
+            return 0
+
+        # Carga historica: cada competicion o temporada es 1 solo request, asi que
+        # traer varias es barato en cuota y da el volumen de partidos finalizados
+        # que el entrenamiento necesita.
+        total = sincronizar_europa(db, ventana=not europa_completo)
+        for anio in [int(t) for t in (temporadas or "").split(",") if t.strip()]:
+            traidos = sincronizar_paraguay(db, temporada=anio)
+            log.info("Temporada %d: %d partidos", anio, traidos)
+            total += traidos
+        db.commit()
+        log.info("Partidos sincronizados: %d", total)
+        return 0
+    finally:
+        db.close()
+
+
+def cmd_importar_csv(temporadas: int, divisiones: str | None) -> int:
+    db = FabricaSesion()
+    try:
+        codigos = temporadas_recientes(temporadas)
+        elegidas = (
+            [d.strip().upper() for d in divisiones.split(",") if d.strip()] if divisiones else None
+        )
+        total = importar_historico_csv(db, codigos, elegidas)
+        log.info("Historico importado: %d partidos nuevos", total)
         return 0
     finally:
         db.close()
@@ -283,7 +317,33 @@ def main() -> int:
     p_admin.add_argument("--email")
     p_admin.add_argument("--password")
 
-    sub.add_parser("sincronizar", help="Sincroniza datos de las APIs externas")
+    p_sinc = sub.add_parser("sincronizar", help="Sincroniza datos de las APIs externas")
+    p_sinc.add_argument(
+        "--temporadas",
+        help="Anios de la liga paraguaya a traer, separados por coma (ej: 2022,2023,2024). "
+        "El plan gratis de API-Football solo llega hasta 2024.",
+    )
+    p_sinc.add_argument(
+        "--europa-completo",
+        action="store_true",
+        help="Trae la temporada europea en curso completa en vez de la ventana de "
+        "-10/+21 dias. Mismo costo (1 request por competicion).",
+    )
+
+    p_csv = sub.add_parser(
+        "importar-csv",
+        help="Importa el historico gratuito de football-data.co.uk (sin API key)",
+    )
+    p_csv.add_argument(
+        "--temporadas",
+        type=int,
+        default=10,
+        help="Cuantas temporadas hacia atras traer (por defecto 10)",
+    )
+    p_csv.add_argument(
+        "--divisiones",
+        help="Codigos separados por coma. Por defecto: " + ",".join(DIVISIONES),
+    )
 
     p_entrenar = sub.add_parser("entrenar", help="Reentrena y valida el modelo")
     p_entrenar.add_argument(
@@ -308,7 +368,9 @@ def main() -> int:
         case "crear-admin":
             return crear_admin(args.email, args.password)
         case "sincronizar":
-            return cmd_sincronizar()
+            return cmd_sincronizar(args.temporadas, args.europa_completo)
+        case "importar-csv":
+            return cmd_importar_csv(args.temporadas, args.divisiones)
         case "entrenar":
             return cmd_entrenar(args.algoritmo)
         case "predecir":
