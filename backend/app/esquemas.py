@@ -52,6 +52,12 @@ class UsuarioSalida(BaseModel):
     creado_en: datetime
 
 
+class ProveedoresSalida(BaseModel):
+    """Formas de ingreso habilitadas en este entorno."""
+
+    google: bool
+
+
 class MensajeSalida(BaseModel):
     mensaje: str
 

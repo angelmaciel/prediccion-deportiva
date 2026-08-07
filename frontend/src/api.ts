@@ -11,6 +11,7 @@ import type {
   MetricaJornada,
   PaginaPartidos,
   Partido,
+  Proveedores,
   ResumenModelo,
   Usuario,
   VersionModelo,
@@ -83,6 +84,15 @@ export const api = {
   versionesModelo: () => pedir<VersionModelo[]>('/transparencia/versiones'),
 
   yo: () => pedir<Usuario>('/auth/yo'),
+
+  proveedores: () => pedir<Proveedores>('/auth/proveedores'),
+
+  // No es un fetch: el ingreso con Google es una navegacion de la pestana
+  // entera, porque el rodeo pasa por accounts.google.com y vuelve con la
+  // cookie ya puesta por el backend.
+  irAGoogle: () => {
+    window.location.href = `${BASE}/auth/google/inicio`
+  },
 
   login: (email: string, password: string, codigo_totp?: string) =>
     pedir<Usuario>('/auth/login', {

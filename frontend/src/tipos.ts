@@ -89,3 +89,8 @@ export interface Usuario {
   totp_activo: boolean
   creado_en: string
 }
+
+/** Formas de ingreso habilitadas en el backend que esta sirviendo. */
+export interface Proveedores {
+  google: boolean
+}

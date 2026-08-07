@@ -17,6 +17,13 @@ class Rol(StrEnum):
     ADMIN = "admin"
 
 
+class Proveedor(StrEnum):
+    """Como se autentica la cuenta."""
+
+    LOCAL = "local"  # email + contrasena
+    GOOGLE = "google"
+
+
 class Usuario(Base):
     __tablename__ = "usuarios"
 
@@ -25,11 +32,20 @@ class Usuario(Base):
     # `email_indice`, un HMAC determinista que no permite recuperar el original.
     email: Mapped[str] = mapped_column(TextoCifrado(512), nullable=False)
     email_indice: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
-    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
-    rol: Mapped[Rol] = mapped_column(
-        enum_por_valor(Rol, 20), default=Rol.USUARIO, nullable=False
-    )
+    # Nulo en cuentas creadas con Google: no hay contrasena que verificar y el
+    # login por formulario tiene que rechazarlas.
+    password_hash: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    rol: Mapped[Rol] = mapped_column(enum_por_valor(Rol, 20), default=Rol.USUARIO, nullable=False)
     activo: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+
+    proveedor: Mapped[Proveedor] = mapped_column(
+        enum_por_valor(Proveedor, 20), default=Proveedor.LOCAL, nullable=False
+    )
+    # Identificador estable que da Google (`sub`). No es el email: el email
+    # puede cambiar, el sub no.
+    proveedor_sub: Mapped[str | None] = mapped_column(
+        String(64), unique=True, index=True, nullable=True
+    )
 
     totp_secreto: Mapped[str | None] = mapped_column(TextoCifrado(512), nullable=True)
     totp_activo: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)

@@ -68,6 +68,17 @@ class Config(BaseSettings):
     api_football_host: str = "v3.football.api-sports.io"
     api_football_cuota_diaria: int = 100
 
+    # --- Ingreso con Google (OAuth 2.0) ---
+    # Vacios = el boton no se ofrece y los endpoints responden 404. La app
+    # arranca igual: el ingreso con formulario no depende de esto.
+    google_client_id: str = ""
+    google_client_secret: str = ""
+    # Tiene que coincidir caracter por caracter con la URI autorizada que se
+    # carga en Google Cloud Console, o Google rechaza el intercambio.
+    google_redirect_uri: str = "http://localhost:8000/auth/google/callback"
+    # A donde vuelve el navegador despues del rodeo por Google.
+    url_frontend: str = "http://localhost:5173"
+
     # --- Scheduler ---
     scheduler_activo: bool = False
     sincronizacion_cron_horas: str = "3,15"

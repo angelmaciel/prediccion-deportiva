@@ -18,16 +18,15 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.deps import asegurar_utc, registrar_acceso, usuario_actual
+from app.api.sesiones import crear_sesion, establecer_cookie
 from app.core.config import obtener_config
 from app.core.crypto import hash_token, indice_ciego, normalizar_email
 from app.core.limites import clave_login, limiter
 from app.core.seguridad import (
     generar_secreto_totp,
-    generar_token_sesion,
     hashear_password,
     necesita_rehash,
     uri_provisioning_totp,
-    vencimiento_sesion,
     verificar_password,
     verificar_totp,
 )
@@ -35,6 +34,7 @@ from app.db.session import obtener_db
 from app.esquemas import (
     LoginEntrada,
     MensajeSalida,
+    ProveedoresSalida,
     RegistroEntrada,
     TotpAltaSalida,
     TotpConfirmacionEntrada,
@@ -47,32 +47,6 @@ router = APIRouter(prefix="/auth", tags=["autenticacion"])
 MENSAJE_CREDENCIALES = "Email o contrasena incorrectos"
 MAX_INTENTOS_CUENTA = 10
 BLOQUEO_MINUTOS = 15
-
-
-def _establecer_cookie(respuesta: Response, token: str) -> None:
-    config = obtener_config()
-    respuesta.set_cookie(
-        key=config.cookie_nombre,
-        value=token,
-        max_age=config.sesion_duracion_horas * 3600,
-        httponly=True,  # inaccesible desde JavaScript
-        secure=config.cookie_segura,  # solo por HTTPS en produccion
-        samesite="strict",  # el navegador no la manda en requests cross-site (anti-CSRF)
-        path="/",
-    )
-
-
-def _crear_sesion(db: Session, usuario: Usuario, request: Request) -> str:
-    token = generar_token_sesion()
-    db.add(
-        Sesion(
-            usuario_id=usuario.id,
-            token_hash=hash_token(token),  # la base nunca guarda el token en claro
-            expira_en=vencimiento_sesion(),
-            user_agent=(request.headers.get("user-agent") or "")[:255] or None,
-        )
-    )
-    return token
 
 
 def _buscar_por_email(db: Session, email: str) -> Usuario | None:
@@ -174,12 +148,12 @@ def login(
 
     usuario.intentos_fallidos = 0
     usuario.bloqueado_hasta = None
-    token = _crear_sesion(db, usuario, request)
+    token = crear_sesion(db, usuario, request)
     registrar_acceso(db, "login", request, usuario_id=usuario.id)
     db.commit()
     db.refresh(usuario)
 
-    _establecer_cookie(respuesta, token)
+    establecer_cookie(respuesta, token)
     return usuario
 
 
@@ -206,6 +180,17 @@ def logout(
 @router.get("/yo", response_model=UsuarioSalida)
 def yo(usuario: Usuario = Depends(usuario_actual)) -> Usuario:
     return usuario
+
+
+@router.get("/proveedores", response_model=ProveedoresSalida)
+def proveedores() -> ProveedoresSalida:
+    """Que formas de ingreso ofrece este entorno.
+
+    El front lo consulta para no mostrar un boton de Google que llevaria a un
+    404 si no hay credenciales cargadas.
+    """
+    config = obtener_config()
+    return ProveedoresSalida(google=bool(config.google_client_id and config.google_client_secret))
 
 
 @router.post("/2fa/alta", response_model=TotpAltaSalida)
