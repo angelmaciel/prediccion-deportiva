@@ -108,6 +108,24 @@ class Config(BaseSettings):
     admin_email_inicial: str = ""
     admin_password_inicial: str = ""
 
+    @field_validator("database_url")
+    @classmethod
+    def _driver_explicito(cls, v: str) -> str:
+        """Fuerza el driver psycopg 3 en la URL de PostgreSQL.
+
+        Render (y Heroku, y varios PaaS) inyectan la URL como `postgres://` o
+        `postgresql://`, sin driver. SQLAlchemy 2 resuelve `postgres://` a un
+        dialecto que ya no existe y `postgresql://` a psycopg2, que este
+        proyecto no instala — usa psycopg 3. En ambos casos la app no arranca,
+        y el error habla de un dialecto o un modulo, no de la URL, asi que
+        cuesta relacionarlo con la variable de entorno.
+        """
+        if v.startswith("postgres://"):
+            return "postgresql+psycopg://" + v[len("postgres://") :]
+        if v.startswith("postgresql://"):
+            return "postgresql+psycopg://" + v[len("postgresql://") :]
+        return v
+
     @field_validator("origenes_permitidos")
     @classmethod
     def _sin_comodin(cls, v: str) -> str:

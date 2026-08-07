@@ -6,6 +6,11 @@
 # base (`versiones_modelo.artefacto_modelo`). Es obligatorio aca — el job que
 # entrena y el servicio web son maquinas distintas con discos efimeros, asi que
 # un artefacto que viviera solo en disco nunca llegaria a la API.
+#
+# Nota sobre los jobs programados: Render no tiene plan gratuito para `cron`
+# (se factura por minuto desde Starter), asi que el trabajo periodico vive en
+# GitHub Actions — ver `.github/workflows/mantenimiento.yml`. Es gratis en
+# repositorios publicos y corre contra la URL externa de esta misma base.
 
 databases:
   - name: prediccion-db
@@ -97,55 +102,3 @@ services:
       - path: /*
         name: Content-Security-Policy
         value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://prediccion-api.onrender.com; base-uri 'none'; frame-ancestors 'none'"
-
-  # Carga inicial. Idempotente: importa el historico, trae la temporada, entrena
-  # y predice solo si falta. Corre a diario porque en el plan gratuito un job
-  # puede quedarse sin tiempo a mitad de camino; al dia siguiente retoma donde
-  # quedo, y una vez completo cada corrida termina en segundos sin hacer nada.
-  - type: cron
-    name: prediccion-bootstrap
-    runtime: python
-    plan: free
-    schedule: "0 4 * * *"
-    buildCommand: pip install -r backend/requirements.txt
-    startCommand: cd backend && python manage.py bootstrap
-    envVars: &jobEnv
-      - key: PYTHON_VERSION
-        value: "3.12.7"
-      - key: ENTORNO
-        value: production
-      - key: DATABASE_URL
-        fromDatabase:
-          name: prediccion-db
-          property: connectionString
-      - key: CLAVE_CIFRADO_DATOS
-        sync: false
-      - key: CLAVE_INDICE_CIEGO
-        sync: false
-      - key: SECRET_KEY
-        sync: false
-      - key: FOOTBALL_DATA_TOKEN
-        sync: false
-      - key: API_FOOTBALL_KEY
-        sync: false
-
-  # Sincronizacion diaria de resultados y fixtures, mas las predicciones nuevas.
-  - type: cron
-    name: prediccion-sincronizacion
-    runtime: python
-    plan: free
-    schedule: "0 6 * * *"
-    buildCommand: pip install -r backend/requirements.txt
-    startCommand: cd backend && python manage.py sincronizar && python manage.py predecir && python manage.py metricas
-    envVars: *jobEnv
-
-  # Reentrenamiento semanal. Sin esto el modelo queda congelado en el que dejo
-  # el bootstrap y nunca incorpora los resultados nuevos.
-  - type: cron
-    name: prediccion-reentrenamiento
-    runtime: python
-    plan: free
-    schedule: "0 5 * * 1"
-    buildCommand: pip install -r backend/requirements.txt
-    startCommand: cd backend && python manage.py entrenar && python manage.py predecir
-    envVars: *jobEnv
