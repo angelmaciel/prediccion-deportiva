@@ -16,8 +16,14 @@ from app.db.session import obtener_db
 from app.esquemas import MetricaJornadaSalida, ResumenModeloSalida, VersionModeloSalida
 from app.modelos.prediccion import VersionModelo
 from app.servicios.metricas import historial_por_jornada, resumen_global
+from app.servicios.ventana import ventana_reciente
 
 router = APIRouter(prefix="/transparencia", tags=["transparencia"])
+
+HISTORICO = Query(
+    default=False,
+    description="Evalua todo el historico en vez de solo ayer, hoy y manana",
+)
 
 
 @router.get("/resumen", response_model=ResumenModeloSalida)
@@ -25,11 +31,17 @@ def resumen(
     request: Request,
     db: Session = Depends(obtener_db),
     liga: str | None = Query(default=None, max_length=80),
+    historico: bool = HISTORICO,
 ) -> ResumenModeloSalida:
+    """Por defecto mide solo los partidos de la ventana reciente.
+
+    Recorrer todas las temporadas para cada visita es justamente lo que hacia
+    lenta esta pagina; el numero de siempre sigue a un click de distancia.
+    """
     version = db.execute(
         select(VersionModelo).where(VersionModelo.activa.is_(True))
     ).scalar_one_or_none()
-    global_ = resumen_global(db, liga)
+    global_ = resumen_global(db, liga, None if historico else ventana_reciente())
     return ResumenModeloSalida(
         version_activa=version.version if version else None,
         algoritmo=version.algoritmo if version else None,
@@ -51,10 +63,10 @@ def jornadas(
     db: Session = Depends(obtener_db),
     liga: str | None = Query(default=None, max_length=80),
     limite: int = Query(default=50, ge=1, le=200),
+    historico: bool = HISTORICO,
 ) -> list[MetricaJornadaSalida]:
-    return [
-        MetricaJornadaSalida.model_validate(m) for m in historial_por_jornada(db, liga, limite)
-    ]
+    metricas = historial_por_jornada(db, liga, limite, None if historico else ventana_reciente())
+    return [MetricaJornadaSalida.model_validate(m) for m in metricas]
 
 
 @router.get("/versiones", response_model=list[VersionModeloSalida])

@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
@@ -14,7 +15,7 @@ from slowapi.middleware import SlowAPIMiddleware
 from app.api.rutas import admin, auth, oauth, partidos, transparencia
 from app.core.config import obtener_config
 from app.core.limites import limiter
-from app.core.middleware import HeadersSeguridad, VerificacionOrigen
+from app.core.middleware import CacheDeLecturaPublica, HeadersSeguridad, VerificacionOrigen
 from app.scheduler import detener_scheduler, iniciar_scheduler
 
 logging.basicConfig(
@@ -55,7 +56,18 @@ app = FastAPI(
 )
 
 app.state.limiter = limiter
+
+# Los listados de partidos son JSON repetitivo (nombres de liga y equipos que se
+# repiten en cada item): comprimen muy bien y es lo que mas pesa en una carga.
+# El minimo evita gastar CPU en respuestas chicas, donde no compensa.
+#
+# Nota de seguridad: comprimir es seguro aca porque ninguna respuesta mezcla un
+# secreto con texto que el atacante controle, que es lo que hace explotable a
+# BREACH. La sesion viaja en cookie HttpOnly y nunca en el cuerpo.
+app.add_middleware(GZipMiddleware, minimum_size=1024)
+
 app.add_middleware(SlowAPIMiddleware)
+app.add_middleware(CacheDeLecturaPublica)
 app.add_middleware(HeadersSeguridad)
 app.add_middleware(VerificacionOrigen)
 

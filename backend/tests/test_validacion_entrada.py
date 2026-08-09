@@ -128,6 +128,26 @@ class TestValidacionAdmin:
         assert respuesta.status_code == 422
 
 
+class TestCacheDeLecturaPublica:
+    """Los GET publicos se marcan cacheables; lo que depende del usuario, no."""
+
+    @pytest.mark.parametrize("ruta", ["/partidos", "/partidos/ligas", "/transparencia/resumen"])
+    def test_las_lecturas_publicas_se_pueden_cachear(self, cliente, ruta):
+        assert cliente.get(ruta).headers["Cache-Control"] == (
+            "public, max-age=120, stale-while-revalidate=600"
+        )
+
+    def test_lo_que_depende_de_la_sesion_no_se_marca_publico(self, cliente):
+        # Marcar `public` una respuesta con datos de un usuario la filtraria a la
+        # cache compartida del siguiente visitante.
+        assert "Cache-Control" not in cliente.get("/auth/yo").headers
+
+    def test_un_error_no_se_cachea(self, cliente):
+        # Cachear un 404 dejaria el partido inaccesible hasta que venza el TTL,
+        # incluso despues de que la sincronizacion lo cargue.
+        assert "Cache-Control" not in cliente.get("/partidos/999999").headers
+
+
 class TestHeadersDeSeguridad:
     def test_headers_presentes(self, cliente):
         headers = cliente.get("/salud").headers

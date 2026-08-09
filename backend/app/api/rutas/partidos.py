@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy import func, select
@@ -20,7 +20,6 @@ from app.esquemas import (
     PaginaPartidos,
     PartidoDeRacha,
     PartidoSalida,
-    PrediccionSalida,
     PromediosH2H,
     RachaEquipo,
     SenialSalida,
@@ -28,7 +27,7 @@ from app.esquemas import (
 )
 from app.ml.mercados import ResultadoEscenario
 from app.modelos.futbol import Equipo, EstadoPartido, Partido
-from app.modelos.prediccion import NarrativaPartido, Prediccion
+from app.modelos.prediccion import NarrativaPartido
 from app.servicios.h2h import (
     LIMITE_POR_DEFECTO,
     ResumenEquipo,
@@ -39,55 +38,17 @@ from app.servicios.h2h import (
     ultimos_partidos,
 )
 from app.servicios.predicciones import ModeloNoDisponible, modelo_activo
+from app.servicios.serializacion import (
+    a_salida,
+    listado_con_predicciones,
+    ultimas_predicciones,
+)
+from app.servicios.ventana import ventana_reciente
 from app.servicios.veredicto import SinModelo, construir_veredicto
 
 router = APIRouter(prefix="/partidos", tags=["partidos"])
 
 MAX_POR_PAGINA = 100
-
-
-def _ultimas_predicciones(db: Session, ids: list[int]) -> dict[int, Prediccion]:
-    """Ultima prediccion por partido, en una sola consulta."""
-    if not ids:
-        return {}
-    predicciones = db.execute(
-        select(Prediccion)
-        .where(Prediccion.partido_id.in_(ids))
-        .order_by(Prediccion.partido_id.asc(), Prediccion.creado_en.asc(), Prediccion.id.asc())
-    ).scalars()
-    # Al recorrer en orden ascendente, la ultima escritura de cada clave gana.
-    return {p.partido_id: p for p in predicciones}
-
-
-def _a_salida(partido: Partido, prediccion: Prediccion | None) -> PartidoSalida:
-    return PartidoSalida(
-        id=partido.id,
-        fecha=partido.fecha,
-        liga=partido.liga,
-        temporada=partido.temporada,
-        jornada=partido.jornada,
-        estado=partido.estado.value,
-        equipo_local=EquipoSalida.model_validate(partido.equipo_local),
-        equipo_visitante=EquipoSalida.model_validate(partido.equipo_visitante),
-        goles_local=partido.goles_local,
-        goles_visitante=partido.goles_visitante,
-        resultado_real=partido.resultado_real.value if partido.resultado_real else None,
-        prediccion=(
-            PrediccionSalida(
-                prob_local=prediccion.prob_local,
-                prob_empate=prediccion.prob_empate,
-                prob_visitante=prediccion.prob_visitante,
-                marcador_probable_local=prediccion.marcador_probable_local,
-                marcador_probable_visitante=prediccion.marcador_probable_visitante,
-                modelo_version=prediccion.modelo_version,
-                resultado_predicho=prediccion.resultado_predicho,
-                confianza=prediccion.confianza,
-                creado_en=prediccion.creado_en,
-            )
-            if prediccion
-            else None
-        ),
-    )
 
 
 @router.get("", response_model=PaginaPartidos)
@@ -98,10 +59,18 @@ def listar_partidos(
     estado: EstadoPartido | None = Query(default=None),
     desde: datetime | None = Query(default=None),
     hasta: datetime | None = Query(default=None),
+    historico: bool = Query(
+        default=False,
+        description="Levanta la ventana de ayer/hoy/manana y busca en todo el historico",
+    ),
     pagina: int = Query(default=1, ge=1, le=1000),
     por_pagina: int = Query(default=20, ge=1, le=MAX_POR_PAGINA),
 ) -> PaginaPartidos:
-    """Listado paginado con filtros. Todos los parametros se validan con Pydantic."""
+    """Listado paginado con filtros. Todos los parametros se validan con Pydantic.
+
+    Sin rango explicito devuelve solo ayer, hoy y manana. Para ir mas atras hay
+    que pedirlo: `historico=true` o un `desde`/`hasta` propio.
+    """
     filtros = []
     if liga:
         filtros.append(Partido.liga == liga)
@@ -111,6 +80,9 @@ def listar_partidos(
         filtros.append(Partido.fecha >= desde)
     if hasta:
         filtros.append(Partido.fecha <= hasta)
+    if not historico and desde is None and hasta is None:
+        inicio, fin = ventana_reciente()
+        filtros.extend([Partido.fecha >= inicio, Partido.fecha < fin])
 
     total = db.execute(select(func.count(Partido.id)).where(*filtros)).scalar_one()
     partidos = list(
@@ -124,12 +96,11 @@ def listar_partidos(
         .unique()
         .scalars()
     )
-    predicciones = _ultimas_predicciones(db, [p.id for p in partidos])
     return PaginaPartidos(
         total=total,
         pagina=pagina,
         por_pagina=por_pagina,
-        items=[_a_salida(p, predicciones.get(p.id)) for p in partidos],
+        items=listado_con_predicciones(db, partidos),
     )
 
 
@@ -137,16 +108,26 @@ def listar_partidos(
 def proximos_partidos(
     request: Request,
     db: Session = Depends(obtener_db),
-    dias: int = Query(default=7, ge=1, le=30),
+    dias: int = Query(
+        default=1,
+        ge=1,
+        le=30,
+        description="Dias hacia atras y hacia adelante alrededor de hoy (1 = ayer, hoy y manana)",
+    ),
     liga: str | None = Query(default=None, max_length=80),
     limite: int = Query(default=50, ge=1, le=MAX_POR_PAGINA),
 ) -> list[PartidoSalida]:
-    """Partidos programados con su prediccion vigente."""
-    ahora = datetime.now(timezone.utc)
+    """Partidos programados con su prediccion vigente.
+
+    La ventana arranca al inicio de ayer, no en `ahora`: un partido de anoche
+    que la fuente todavia no cerro sigue siendo informacion util, y cortar por
+    dia calendario evita que la lista cambie sola a lo largo del dia.
+    """
+    inicio, fin = ventana_reciente(dias)
     filtros = [
         Partido.estado == EstadoPartido.PROGRAMADO,
-        Partido.fecha >= ahora,
-        Partido.fecha <= ahora + timedelta(days=dias),
+        Partido.fecha >= inicio,
+        Partido.fecha < fin,
     ]
     if liga:
         filtros.append(Partido.liga == liga)
@@ -156,8 +137,7 @@ def proximos_partidos(
         .unique()
         .scalars()
     )
-    predicciones = _ultimas_predicciones(db, [p.id for p in partidos])
-    return [_a_salida(p, predicciones.get(p.id)) for p in partidos]
+    return listado_con_predicciones(db, partidos)
 
 
 @router.get("/ligas", response_model=list[str])
@@ -185,8 +165,8 @@ def detalle_partido(
     partido = db.get(Partido, partido_id)
     if partido is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Partido no encontrado")
-    predicciones = _ultimas_predicciones(db, [partido.id])
-    return _a_salida(partido, predicciones.get(partido.id))
+    predicciones = ultimas_predicciones(db, [partido.id])
+    return a_salida(partido, predicciones.get(partido.id))
 
 
 @router.get("/{partido_id}/narrativa", response_model=NarrativaSalida)

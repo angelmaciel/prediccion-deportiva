@@ -51,6 +51,39 @@ class HeadersSeguridad(BaseHTTPMiddleware):
         return respuesta
 
 
+# Lecturas que son iguales para todos los visitantes. No hay nada por usuario
+# en estas respuestas, asi que cualquier cache intermedia las puede compartir.
+PREFIJOS_PUBLICOS = ("/partidos", "/transparencia")
+
+# La base solo cambia cuando corre el job diario. Dos minutos de frescura es
+# muchisimo mas conservador que eso, y `stale-while-revalidate` hace que ni
+# siquiera la primera visita despues de vencido espere: el navegador sirve la
+# copia guardada y refresca por detras.
+CACHE_PUBLICO = "public, max-age=120, stale-while-revalidate=600"
+
+
+class CacheDeLecturaPublica(BaseHTTPMiddleware):
+    """Marca como cacheables los GET publicos.
+
+    Sin esto cada visita paga el viaje completo hasta Render aunque el contenido
+    sea identico al que el navegador bajo hace diez segundos. Es lo que permite
+    que volver a la portada o navegar entre pestanas no toque la red.
+
+    Solo se aplica a los prefijos publicos: marcar `public` una respuesta con
+    datos de un usuario seria filtrarla a la cache compartida del proximo.
+    """
+
+    async def dispatch(self, request: Request, call_next):  # noqa: D102
+        respuesta = await call_next(request)
+        if (
+            request.method == "GET"
+            and respuesta.status_code == 200
+            and request.url.path.startswith(PREFIJOS_PUBLICOS)
+        ):
+            respuesta.headers["Cache-Control"] = CACHE_PUBLICO
+        return respuesta
+
+
 class VerificacionOrigen(BaseHTTPMiddleware):
     """Defensa en profundidad contra CSRF.
 

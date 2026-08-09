@@ -6,6 +6,7 @@ Uso:
     python manage.py entrenar [--algoritmo random_forest]
     python manage.py predecir
     python manage.py metricas
+    python manage.py exportar-instantanea
     python manage.py demo            # datos simulados para probar sin API keys
 """
 
@@ -13,10 +14,12 @@ from __future__ import annotations
 
 import argparse
 import getpass
+import json
 import logging
 import random
 import sys
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 from sqlalchemy import func, select, update
 
@@ -45,6 +48,7 @@ from app.servicios.ingesta.sincronizacion import (
     sincronizar_paraguay,
     sincronizar_todo,
 )
+from app.servicios.instantanea import construir_instantanea
 from app.servicios.metricas import recalcular_metricas_por_jornada
 from app.servicios.predicciones import (
     ModeloNoDisponible,
@@ -314,6 +318,39 @@ def cmd_metricas() -> int:
         db.close()
 
 
+# Ruta por defecto: `frontend/public` se copia tal cual a `dist` al construir,
+# asi que el archivo termina servido por el CDN del sitio estatico.
+RUTA_INSTANTANEA = Path(__file__).resolve().parent.parent / "frontend" / "public" / "datos"
+
+
+def cmd_exportar_instantanea(salida: str | None = None) -> int:
+    """Escribe la instantanea de la ventana para que la portada abra sin API."""
+    destino = Path(salida) if salida else RUTA_INSTANTANEA
+    destino.mkdir(parents=True, exist_ok=True)
+    archivo = destino / "instantanea.json"
+
+    db = FabricaSesion()
+    try:
+        datos = construir_instantanea(db)
+    finally:
+        db.close()
+
+    # Se escribe ordenado y con un dato por linea porque este archivo se
+    # commitea todos los dias: asi el diff muestra los partidos que cambiaron y
+    # no una sola linea gigante distinta de la anterior.
+    nuevo = json.dumps(datos, ensure_ascii=False, sort_keys=True, indent=1) + "\n"
+    archivo.write_text(nuevo, encoding="utf-8")
+
+    log.info(
+        "Instantanea escrita en %s (%d proximos, %d resultados, %.1f KB)",
+        archivo,
+        len(datos["proximos"]),
+        len(datos["resultados"]),
+        len(nuevo.encode("utf-8")) / 1024,
+    )
+    return 0
+
+
 # --- Datos de demostracion ---
 
 EQUIPOS_DEMO = [
@@ -506,6 +543,12 @@ def main() -> int:
     sub.add_parser("predecir", help="Genera predicciones para los proximos partidos")
     sub.add_parser("metricas", help="Recalcula el historial de aciertos por jornada")
 
+    p_snap = sub.add_parser(
+        "exportar-instantanea",
+        help="Escribe el JSON de la ventana que el sitio estatico sirve desde el CDN",
+    )
+    p_snap.add_argument("--salida", help="Directorio destino (por defecto frontend/public/datos)")
+
     p_backtest = sub.add_parser(
         "backtest", help="Predice el historico walk-forward (llena el historial de aciertos)"
     )
@@ -534,6 +577,8 @@ def main() -> int:
             return cmd_predecir()
         case "metricas":
             return cmd_metricas()
+        case "exportar-instantanea":
+            return cmd_exportar_instantanea(args.salida)
         case "backtest":
             return cmd_backtest(args.algoritmo)
         case "demo":
