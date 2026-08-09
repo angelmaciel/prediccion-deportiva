@@ -1,15 +1,19 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { api } from '../api'
 import { Cargando, ErrorCarga, SinDatos } from '../componentes/Estado'
+import { FiltroDeDia } from '../componentes/FiltroDeDia'
 import { InterruptorHistorico } from '../componentes/InterruptorHistorico'
 import { TarjetaPartido } from '../componentes/TarjetaPartido'
+import type { Dia } from '../dias'
+import { contarPorDia, filtrarPorDia } from '../dias'
 import { usePeticion } from '../hooks/usePeticion'
 import { ligasDeLaInstantanea, resultadosDeLaInstantanea } from '../instantanea'
 
 export default function Resultados() {
   const [liga, setLiga] = useState('')
   const [historico, setHistorico] = useState(false)
+  const [dia, setDia] = useState<Dia | null>(null)
   const [pagina, setPagina] = useState(1)
 
   const ligas = usePeticion(() => api.ligas(), [], { respaldo: ligasDeLaInstantanea })
@@ -25,6 +29,15 @@ export default function Resultados() {
           ? Promise.resolve(null)
           : resultadosDeLaInstantanea(liga || undefined),
     },
+  )
+
+  const items = useMemo(() => pagina_.datos?.items ?? [], [pagina_.datos])
+  const conteo = useMemo(() => contarPorDia(items), [items])
+  // En historico el filtro no aplica: son partidos de temporadas enteras y
+  // casi ninguno cae en ayer/hoy/manana.
+  const visibles = useMemo(
+    () => (historico ? items : filtrarPorDia(items, dia)),
+    [items, dia, historico],
   )
 
   const totalPaginas = pagina_.datos
@@ -64,11 +77,14 @@ export default function Resultados() {
           </select>
         </div>
 
+        {!historico && <FiltroDeDia valor={dia} onCambio={setDia} conteo={conteo} />}
+
         <InterruptorHistorico
           id="historico-resultados"
           activo={historico}
           onCambio={(valor) => {
             setHistorico(valor)
+            setDia(null)
             setPagina(1)
           }}
           ayuda="Por defecto se muestran solo los partidos de ayer y hoy. El historico completo tarda mas en cargar."
@@ -77,7 +93,7 @@ export default function Resultados() {
 
       {pagina_.cargando && <Cargando />}
       {pagina_.error && <ErrorCarga mensaje={pagina_.error} />}
-      {pagina_.datos?.items.length === 0 && (
+      {pagina_.datos && visibles.length === 0 && (
         <SinDatos
           texto={
             historico
@@ -88,7 +104,7 @@ export default function Resultados() {
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {(pagina_.datos?.items ?? []).map((partido) => (
+        {visibles.map((partido) => (
           <TarjetaPartido key={partido.id} partido={partido} />
         ))}
       </div>

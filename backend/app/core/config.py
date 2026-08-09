@@ -35,6 +35,12 @@ class Config(BaseSettings):
     debug: bool = False
     nombre_app: str = "Prediccion Deportiva API"
 
+    # Zona en la que se decide que es "ayer", "hoy" y "manana". Tiene que ser la
+    # del publico, no UTC: un partido a las 21:00 en Asuncion ya es del dia
+    # siguiente en UTC, y con la ventana calculada en UTC se caia de la lista
+    # justo en el horario de mayor interes.
+    zona_horaria: str = "America/Asuncion"
+
     # --- Base de datos ---
     database_url: str = "postgresql+psycopg://prediccion:prediccion@localhost:5432/prediccion"
 
