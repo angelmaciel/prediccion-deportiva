@@ -37,9 +37,7 @@ class ControlCuota:
     def _registro(self, dia: date | None = None) -> ConsumoCuota:
         dia = dia or datetime.now(timezone.utc).date()
         registro = self.db.execute(
-            select(ConsumoCuota).where(
-                ConsumoCuota.fuente == self.fuente, ConsumoCuota.dia == dia
-            )
+            select(ConsumoCuota).where(ConsumoCuota.fuente == self.fuente, ConsumoCuota.dia == dia)
         ).scalar_one_or_none()
         if registro is None:
             registro = ConsumoCuota(fuente=self.fuente, dia=dia, requests=0, errores=0)
