@@ -4,8 +4,14 @@
 // nuestra API, que sirve datos ya cacheados en su base. Eso protege la cuota
 // gratuita y evita exponer las claves en el navegador.
 //
-// La sesion viaja en una cookie HttpOnly, por eso todas las llamadas usan
-// `credentials: 'include'` y no hay ningun token en localStorage.
+// Hay dos formas de pedir, y la diferencia es de rendimiento, no de estilo:
+//
+// - `pedirPublico` para partidos y transparencia. Va sin cookie a proposito.
+//   Una respuesta atada a credenciales no la puede guardar ninguna cache
+//   compartida, y estas son identicas para todos los visitantes: mandarles la
+//   cookie tiraba a la basura el `Cache-Control` que devuelve el backend.
+// - `pedir` para lo que sí depende de quien mira (sesion y panel de admin).
+//   Esa sesion viaja en cookie HttpOnly, nunca en localStorage.
 
 import type {
   HistorialH2H,
@@ -32,10 +38,14 @@ export class ErrorApi extends Error {
   }
 }
 
-async function pedir<T>(ruta: string, opciones: RequestInit = {}): Promise<T> {
+async function llamar<T>(
+  ruta: string,
+  credentials: RequestCredentials,
+  opciones: RequestInit = {},
+): Promise<T> {
   const respuesta = await fetch(`${BASE}${ruta}`, {
     ...opciones,
-    credentials: 'include',
+    credentials,
     headers: {
       'Content-Type': 'application/json',
       ...opciones.headers,
@@ -58,45 +68,76 @@ async function pedir<T>(ruta: string, opciones: RequestInit = {}): Promise<T> {
   return (await respuesta.json()) as T
 }
 
-function query(params: Record<string, string | number | undefined>): string {
+/** Lectura publica: cacheable por el navegador y por cualquier capa intermedia. */
+const pedirPublico = <T,>(ruta: string) => llamar<T>(ruta, 'omit')
+
+/** Llamada que depende de la sesion. */
+const pedir = <T,>(ruta: string, opciones: RequestInit = {}) =>
+  llamar<T>(ruta, 'include', opciones)
+
+function query(params: Record<string, string | number | boolean | undefined>): string {
   const buscador = new URLSearchParams()
   for (const [clave, valor] of Object.entries(params)) {
-    if (valor !== undefined && valor !== '') buscador.set(clave, String(valor))
+    // `false` se omite: los flags booleanos del backend ya tienen ese default,
+    // y mandarlos vacia la URL de ruido.
+    if (valor === undefined || valor === '' || valor === false) continue
+    buscador.set(clave, String(valor))
   }
   const texto = buscador.toString()
   return texto ? `?${texto}` : ''
 }
 
+let ligasEnCache: Promise<string[]> | null = null
+
+/** Vacia el cache de ligas. Existe para que cada test arranque en limpio. */
+export function reiniciarCacheDeLigas() {
+  ligasEnCache = null
+}
+
 export const api = {
-  proximosPartidos: (liga?: string, dias = 14) =>
-    pedir<Partido[]>(`/partidos/proximos${query({ liga, dias })}`),
+  // `dias` son dias alrededor de hoy: 1 = ayer, hoy y manana.
+  proximosPartidos: (liga?: string, dias = 1) =>
+    pedirPublico<Partido[]>(`/partidos/proximos${query({ liga, dias })}`),
 
-  listarPartidos: (params: { liga?: string; estado?: string; pagina?: number } = {}) =>
-    pedir<PaginaPartidos>(`/partidos${query({ ...params, por_pagina: 20 })}`),
+  // Sin `historico` el backend acota a ayer/hoy/manana. Es el default a
+  // proposito: es lo que mira casi todo el mundo y es lo que carga rapido.
+  listarPartidos: (
+    params: { liga?: string; estado?: string; pagina?: number; historico?: boolean } = {},
+  ) => pedirPublico<PaginaPartidos>(`/partidos${query({ ...params, por_pagina: 20 })}`),
 
-  detallePartido: (id: number) => pedir<Partido>(`/partidos/${id}`),
+  detallePartido: (id: number) => pedirPublico<Partido>(`/partidos/${id}`),
 
-  narrativa: (id: number) => pedir<Narrativa>(`/partidos/${id}/narrativa`),
+  narrativa: (id: number) => pedirPublico<Narrativa>(`/partidos/${id}/narrativa`),
 
-  veredicto: (id: number) => pedir<Veredicto>(`/partidos/${id}/veredicto`),
+  veredicto: (id: number) => pedirPublico<Veredicto>(`/partidos/${id}/veredicto`),
 
   h2h: (id: number, opciones: { solo_misma_localia?: boolean; liga?: string } = {}) =>
-    pedir<HistorialH2H>(
+    pedirPublico<HistorialH2H>(
       `/partidos/${id}/h2h${query({
         solo_misma_localia: opciones.solo_misma_localia ? 'true' : undefined,
         liga: opciones.liga,
       })}`,
     ),
 
-  ligas: () => pedir<string[]>('/partidos/ligas'),
+  // El listado de ligas es el mismo en las tres paginas y cambia una vez por
+  // temporada, pero cada `usePeticion` lo volvia a pedir en cada navegacion.
+  // Se cachea la promesa (no el resultado) para que dos componentes que montan
+  // a la vez compartan una sola peticion en lugar de disparar dos.
+  ligas: () => {
+    ligasEnCache ??= pedirPublico<string[]>('/partidos/ligas').catch((error) => {
+      ligasEnCache = null // un fallo no se cachea: el proximo intento reintenta
+      throw error
+    })
+    return ligasEnCache
+  },
 
-  resumenModelo: (liga?: string) =>
-    pedir<ResumenModelo>(`/transparencia/resumen${query({ liga })}`),
+  resumenModelo: (liga?: string, historico = false) =>
+    pedirPublico<ResumenModelo>(`/transparencia/resumen${query({ liga, historico })}`),
 
-  metricasPorJornada: (liga?: string) =>
-    pedir<MetricaJornada[]>(`/transparencia/jornadas${query({ liga })}`),
+  metricasPorJornada: (liga?: string, historico = false) =>
+    pedirPublico<MetricaJornada[]>(`/transparencia/jornadas${query({ liga, historico })}`),
 
-  versionesModelo: () => pedir<VersionModelo[]>('/transparencia/versiones'),
+  versionesModelo: () => pedirPublico<VersionModelo[]>('/transparencia/versiones'),
 
   yo: () => pedir<Usuario>('/auth/yo'),
 

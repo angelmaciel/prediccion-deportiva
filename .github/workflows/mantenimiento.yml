@@ -41,6 +41,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
+    # Escritura porque la sincronizacion commitea la instantanea del dia. Sin
+    # esto el push falla con un 403 y el resto del job igual habria servido.
+    permissions:
+      contents: write
+
     env:
       # La externa, no la interna: Actions corre fuera de la red de Render.
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -89,6 +94,31 @@ jobs:
           python manage.py sincronizar
           python manage.py predecir
           python manage.py metricas
+          python manage.py exportar-instantanea
+
+      # La instantanea se commitea para que Render reconstruya el sitio estatico
+      # y el CDN la sirva. Es lo que hace que la portada abra al instante aunque
+      # el servicio web este dormido: no le pega a la API para el primer dibujo.
+      #
+      # Solo se escribe desde este job. Editarla a mano no tiene sentido: la
+      # proxima corrida la pisa.
+      - name: Publicar la instantanea
+        if: steps.tarea.outputs.cual == 'sincronizacion'
+        run: |
+          # `git status` y no `git diff`: la primera corrida crea el archivo, y
+          # un archivo sin versionar todavia no tiene diff contra nada.
+          if [ -z "$(git status --porcelain -- frontend/public/datos/instantanea.json)" ]; then
+            echo "La instantanea no cambio; no hay nada que publicar."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add frontend/public/datos/instantanea.json
+          git commit -m "Actualizar la instantanea del dia"
+          # `--rebase` porque entre el checkout y este push pudo entrar un commit
+          # a mano, y perder ese trabajo por un archivo generado seria absurdo.
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
 
       - name: Reentrenamiento semanal
         if: steps.tarea.outputs.cual == 'reentrenamiento'

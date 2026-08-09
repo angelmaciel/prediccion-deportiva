@@ -27,7 +27,12 @@ from app.ml.validacion import (
     validacion_walk_forward,
 )
 from app.servicios.entrenamiento import construir_dataset, entrenar_modelo
-from app.servicios.metricas import recalcular_metricas_por_jornada, resumen_global
+from app.servicios.metricas import (
+    _brier_de,
+    _pares_evaluables,
+    recalcular_metricas_por_jornada,
+    resumen_global,
+)
 from app.servicios.predicciones import backfill_historico, generar_predicciones, modelo_activo
 from tests.conftest import crear_partido
 
@@ -379,17 +384,43 @@ class TestPipelineCompletoEnBase:
         with pytest.raises(DatosInsuficientes):
             entrenar_modelo(db, registrar_job=False)
 
+    def test_el_resumen_agregado_en_sql_coincide_con_el_calculo_en_python(self, db, equipos):
+        """`resumen_global` agrega en la base; esto fija que da lo mismo que a mano.
+
+        Incluye el desempate de probabilidades: el CASE de SQL tiene que
+        resolverlo en el mismo orden que `max(probs, key=probs.get)`.
+        """
+        self._sembrar(db, equipos)
+        backfill_historico(db, minimo_entrenamiento=150)
+
+        pares = _pares_evaluables(db)
+        assert len(pares) > 0
+        aciertos = sum(
+            int(pred.resultado_predicho == partido.resultado_real.value) for partido, pred in pares
+        )
+        brier = sum(_brier_de(pred, partido.resultado_real.value) for partido, pred in pares)
+        locales = sum(int(partido.resultado_real.value == "L") for partido, _ in pares)
+
+        resultado = resumen_global(db)
+        assert resultado.partidos_evaluados == len(pares)
+        assert resultado.aciertos == aciertos
+        assert resultado.brier == pytest.approx(brier / len(pares))
+        assert resultado.linea_base_local == pytest.approx(locales / len(pares))
+
     def test_transparencia_expone_el_historial(self, db, equipos, cliente):
         self._sembrar(db, equipos)
         backfill_historico(db, minimo_entrenamiento=150)
         recalcular_metricas_por_jornada(db)
 
-        resumen = cliente.get("/transparencia/resumen").json()
+        # `historico=true` porque los partidos sembrados son de temporadas
+        # pasadas y la vista por defecto solo mira la ventana de la fecha.
+        historico = {"historico": "true"}
+        resumen = cliente.get("/transparencia/resumen", params=historico).json()
         assert resumen["partidos_evaluados"] > 0
         assert 0.0 <= resumen["accuracy_real"] <= 1.0
         assert "no son garantias" in resumen["aviso"] or "no garantias" in resumen["aviso"]
 
-        jornadas = cliente.get("/transparencia/jornadas").json()
+        jornadas = cliente.get("/transparencia/jornadas", params=historico).json()
         assert len(jornadas) > 0
         for jornada in jornadas:
             assert jornada["aciertos"] <= jornada["partidos_evaluados"]

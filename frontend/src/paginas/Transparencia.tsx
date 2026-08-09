@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { api } from '../api'
 import { AvisoModelo } from '../componentes/AvisoModelo'
 import { Cargando, ErrorCarga, SinDatos } from '../componentes/Estado'
+import { InterruptorHistorico } from '../componentes/InterruptorHistorico'
 import { formatearFecha, porcentaje } from '../formato'
 import { usePeticion } from '../hooks/usePeticion'
 import type { MetricaJornada } from '../tipos'
@@ -50,10 +51,17 @@ function GraficoJornadas({ metricas }: { metricas: MetricaJornada[] }) {
 
 export default function Transparencia() {
   const [liga, setLiga] = useState('')
+  const [historico, setHistorico] = useState(false)
 
   const ligas = usePeticion(() => api.ligas(), [])
-  const resumen = usePeticion(() => api.resumenModelo(liga || undefined), [liga])
-  const jornadas = usePeticion(() => api.metricasPorJornada(liga || undefined), [liga])
+  const resumen = usePeticion(
+    () => api.resumenModelo(liga || undefined, historico),
+    [liga, historico],
+  )
+  const jornadas = usePeticion(
+    () => api.metricasPorJornada(liga || undefined, historico),
+    [liga, historico],
+  )
   const versiones = usePeticion(() => api.versionesModelo(), [])
 
   const r = resumen.datos
@@ -70,24 +78,48 @@ export default function Transparencia() {
 
       <AvisoModelo />
 
-      <div>
-        <label htmlFor="filtro-liga-transparencia" className="mb-1 block text-sm font-medium">
-          Liga
-        </label>
-        <select
-          id="filtro-liga-transparencia"
-          className="campo max-w-sm"
-          value={liga}
-          onChange={(e) => setLiga(e.target.value)}
-        >
-          <option value="">Todas las ligas</option>
-          {(ligas.datos ?? []).map((nombre) => (
-            <option key={nombre} value={nombre}>
-              {nombre}
-            </option>
-          ))}
-        </select>
+      <div className="flex flex-wrap items-start gap-6">
+        <div className="min-w-[16rem] flex-1">
+          <label htmlFor="filtro-liga-transparencia" className="mb-1 block text-sm font-medium">
+            Liga
+          </label>
+          <select
+            id="filtro-liga-transparencia"
+            className="campo max-w-sm"
+            value={liga}
+            onChange={(e) => setLiga(e.target.value)}
+          >
+            <option value="">Todas las ligas</option>
+            {(ligas.datos ?? []).map((nombre) => (
+              <option key={nombre} value={nombre}>
+                {nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <InterruptorHistorico
+          id="historico-transparencia"
+          activo={historico}
+          onCambio={setHistorico}
+          ayuda="Por defecto se evaluan solo los partidos de ayer y hoy. El historico completo es la medida representativa, pero tarda mas en calcularse."
+        />
       </div>
+
+      {!historico && (
+        <p className="rounded-lg border border-pizarra-200 bg-white px-4 py-3 text-sm text-pizarra-600">
+          Estos numeros salen de una muestra de dos dias, asi que se mueven mucho de un dia al
+          otro. Para juzgar al modelo hay que mirar el{' '}
+          <button
+            type="button"
+            className="font-medium text-cancha-700 underline"
+            onClick={() => setHistorico(true)}
+          >
+            historico completo
+          </button>
+          .
+        </p>
+      )}
 
       {resumen.cargando && <Cargando />}
       {resumen.error && <ErrorCarga mensaje={resumen.error} />}
@@ -146,7 +178,13 @@ export default function Transparencia() {
         {jornadas.cargando && <Cargando />}
         {jornadas.error && <ErrorCarga mensaje={jornadas.error} />}
         {jornadas.datos && jornadas.datos.length === 0 && (
-          <SinDatos texto="Todavia no hay fechas evaluadas." />
+          <SinDatos
+            texto={
+              historico
+                ? 'Todavia no hay fechas evaluadas.'
+                : 'No hay fechas evaluadas entre ayer y hoy. Activa el historico para ver las anteriores.'
+            }
+          />
         )}
         {jornadas.datos && jornadas.datos.length > 0 && (
           <>

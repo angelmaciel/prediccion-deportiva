@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ErrorApi, api } from '../api'
+import { ErrorApi, api, reiniciarCacheDeLigas } from '../api'
 
 function respuestaFalsa(cuerpo: unknown, estado = 200) {
   return {
@@ -16,16 +16,55 @@ describe('cliente de la API', () => {
   beforeEach(() => {
     fetchSimulado = vi.fn()
     vi.stubGlobal('fetch', fetchSimulado)
+    reiniciarCacheDeLigas()
   })
 
-  it('envia las cookies de sesion en cada peticion', async () => {
+  it('pide las ligas una sola vez aunque varias pantallas las necesiten', async () => {
+    fetchSimulado.mockResolvedValue(respuestaFalsa(['La Liga']))
+
+    const [a, b] = await Promise.all([api.ligas(), api.ligas()])
+    expect(a).toEqual(b)
+    expect(fetchSimulado).toHaveBeenCalledTimes(1)
+
+    await api.ligas()
+    expect(fetchSimulado).toHaveBeenCalledTimes(1)
+  })
+
+  it('no cachea un fallo al pedir las ligas', async () => {
+    fetchSimulado.mockResolvedValueOnce(respuestaFalsa({ detail: 'caida' }, 503))
+    await expect(api.ligas()).rejects.toThrow('caida')
+
+    fetchSimulado.mockResolvedValueOnce(respuestaFalsa(['La Liga']))
+    await expect(api.ligas()).resolves.toEqual(['La Liga'])
+  })
+
+  it('envia las cookies de sesion en las llamadas que dependen del usuario', async () => {
     // La sesion vive en una cookie HttpOnly: sin `credentials: include` el
     // navegador no la manda y el usuario aparece siempre como anonimo.
-    fetchSimulado.mockResolvedValue(respuestaFalsa([]))
-    await api.ligas()
+    fetchSimulado.mockResolvedValue(respuestaFalsa({ id: 1 }))
+    await api.yo()
 
     const [, opciones] = fetchSimulado.mock.calls[0]
     expect(opciones.credentials).toBe('include')
+  })
+
+  it('las lecturas publicas van sin cookie para que se puedan cachear', async () => {
+    // Una respuesta atada a credenciales no la guarda ninguna cache compartida.
+    // Estas son iguales para todos los visitantes, asi que mandar la cookie
+    // anularia el Cache-Control que devuelve el backend.
+    fetchSimulado.mockResolvedValue(respuestaFalsa([]))
+
+    await api.proximosPartidos()
+    await api.listarPartidos()
+    await api.ligas()
+    await api.resumenModelo()
+    await api.detallePartido(1)
+    await api.veredicto(1)
+    await api.h2h(1)
+
+    for (const [url, opciones] of fetchSimulado.mock.calls) {
+      expect(opciones.credentials, `${url} no deberia mandar cookie`).toBe('omit')
+    }
   })
 
   it('no adjunta ningun token en los headers', async () => {
@@ -45,6 +84,24 @@ describe('cliente de la API', () => {
     const [url] = fetchSimulado.mock.calls[0]
     expect(url).toContain('dias=7')
     expect(url).not.toContain('liga=')
+  })
+
+  it('pide por defecto la ventana de ayer, hoy y manana', async () => {
+    // El default acotado es lo que hace que las vistas abran rapido: si esto
+    // se rompe, el backend vuelve a barrer temporadas enteras en cada visita.
+    fetchSimulado.mockResolvedValue(respuestaFalsa([]))
+    await api.proximosPartidos()
+
+    expect(fetchSimulado.mock.calls[0][0]).toContain('dias=1')
+  })
+
+  it('omite el flag de historico cuando esta apagado', async () => {
+    fetchSimulado.mockResolvedValue(respuestaFalsa({ items: [] }))
+    await api.listarPartidos({ estado: 'finalizado' })
+    expect(fetchSimulado.mock.calls[0][0]).not.toContain('historico')
+
+    await api.listarPartidos({ estado: 'finalizado', historico: true })
+    expect(fetchSimulado.mock.calls[1][0]).toContain('historico=true')
   })
 
   it('codifica los filtros para no romper la URL', async () => {
