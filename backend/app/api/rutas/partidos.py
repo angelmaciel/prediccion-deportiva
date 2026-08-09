@@ -117,7 +117,12 @@ def proximos_partidos(
     liga: str | None = Query(default=None, max_length=80),
     limite: int = Query(default=50, ge=1, le=MAX_POR_PAGINA),
 ) -> list[PartidoSalida]:
-    """Partidos programados con su prediccion vigente.
+    """Partidos por jugarse o en curso, con su prediccion vigente.
+
+    Incluye los `en_juego` a proposito. Filtrando solo por `programado`, un
+    partido que arrancaba desaparecia de esta pantalla y todavia no aparecia en
+    resultados: quedaba invisible en la app justo durante los noventa minutos
+    en que mas se lo busca.
 
     La ventana arranca al inicio de ayer, no en `ahora`: un partido de anoche
     que la fuente todavia no cerro sigue siendo informacion util, y cortar por
@@ -125,7 +130,7 @@ def proximos_partidos(
     """
     inicio, fin = ventana_reciente(dias)
     filtros = [
-        Partido.estado == EstadoPartido.PROGRAMADO,
+        Partido.estado.in_((EstadoPartido.PROGRAMADO, EstadoPartido.EN_JUEGO)),
         Partido.fecha >= inicio,
         Partido.fecha < fin,
     ]

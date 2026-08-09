@@ -23,6 +23,9 @@ function Escudo({ url, nombre }: { url: string | null; nombre: string }) {
 export function TarjetaPartido({ partido }: { partido: Partido }) {
   const { prediccion, equipo_local: local, equipo_visitante: visitante } = partido
   const finalizado = partido.estado === 'finalizado'
+  const enVivo = partido.estado === 'en_juego'
+  // En vivo tambien hay marcador, y es el dato que la gente viene a mirar.
+  const hayMarcador = finalizado || enVivo
   const acerto =
     finalizado && prediccion ? prediccion.resultado_predicho === partido.resultado_real : null
   const [abierto, setAbierto] = useState(false)
@@ -38,7 +41,15 @@ export function TarjetaPartido({ partido }: { partido: Partido }) {
             {partido.jornada ? ` · Fecha ${partido.jornada}` : ''}
           </p>
         </div>
-        {finalizado ? (
+        {enVivo ? (
+          <span className="etiqueta bg-rose-50 text-rose-700">
+            <span
+              className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-rose-600"
+              aria-hidden="true"
+            />
+            En vivo
+          </span>
+        ) : finalizado ? (
           <span className="etiqueta bg-pizarra-100 text-pizarra-600">Finalizado</span>
         ) : (
           <span className="etiqueta bg-cancha-50 text-cancha-700">Programado</span>
@@ -51,9 +62,9 @@ export function TarjetaPartido({ partido }: { partido: Partido }) {
           <span className="truncate font-medium">{local.nombre}</span>
         </div>
         <div className="shrink-0 text-center font-bold tabular-nums">
-          {finalizado ? (
-            <span className="text-lg">
-              {partido.goles_local} - {partido.goles_visitante}
+          {hayMarcador ? (
+            <span className={`text-lg ${enVivo ? 'text-rose-700' : ''}`}>
+              {partido.goles_local ?? 0} - {partido.goles_visitante ?? 0}
             </span>
           ) : (
             <span className="text-sm text-pizarra-400">vs</span>

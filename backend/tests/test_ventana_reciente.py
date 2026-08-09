@@ -11,6 +11,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
+from app.modelos.futbol import EstadoPartido
 from app.servicios.metricas import recalcular_metricas_por_jornada, resumen_global
 from app.servicios.ventana import ventana_reciente
 from tests.conftest import crear_partido
@@ -23,15 +24,27 @@ def _dias(n: int) -> datetime:
 
 
 class TestVentanaReciente:
-    def test_cubre_ayer_hoy_y_manana(self):
+    def test_cubre_ayer_hoy_y_manana_en_la_zona_del_publico(self):
+        # Asuncion es UTC-3: la medianoche local son las 03:00 UTC.
         ahora = datetime(2026, 8, 9, 17, 30, tzinfo=timezone.utc)
         inicio, fin = ventana_reciente(ahora=ahora)
-        assert inicio == datetime(2026, 8, 8, 0, 0, tzinfo=timezone.utc)
-        assert fin == datetime(2026, 8, 11, 0, 0, tzinfo=timezone.utc)
+        assert inicio == datetime(2026, 8, 8, 3, 0, tzinfo=timezone.utc)
+        assert fin == datetime(2026, 8, 11, 3, 0, tzinfo=timezone.utc)
+
+    def test_incluye_los_partidos_de_la_noche(self):
+        """Un partido de las 21:00 en Asuncion ya es del dia siguiente en UTC.
+
+        Con la ventana calculada en UTC se caia de la lista justo en el horario
+        de mayor interes; por eso los cortes son en la zona del publico.
+        """
+        ahora = datetime(2026, 8, 9, 17, 0, tzinfo=timezone.utc)  # 14:00 en Asuncion
+        inicio, fin = ventana_reciente(ahora=ahora)
+        partido_de_manana_a_la_noche = datetime(2026, 8, 11, 0, 30, tzinfo=timezone.utc)
+        assert inicio <= partido_de_manana_a_la_noche < fin
 
     def test_corta_por_dia_calendario_no_por_24_horas(self):
         """A cualquier hora del dia la ventana es la misma: la lista no se mueve sola."""
-        temprano = ventana_reciente(ahora=datetime(2026, 8, 9, 0, 5, tzinfo=timezone.utc))
+        temprano = ventana_reciente(ahora=datetime(2026, 8, 9, 12, 5, tzinfo=timezone.utc))
         tarde = ventana_reciente(ahora=datetime(2026, 8, 9, 23, 55, tzinfo=timezone.utc))
         assert temprano == tarde
 
@@ -75,6 +88,24 @@ class TestProximos:
 
         ids = {p["id"] for p in cliente.get("/partidos/proximos").json()}
         assert ids == {ayer.id, manana.id}
+
+    def test_incluye_los_partidos_en_juego(self, cliente, db, equipos):
+        """Un partido en curso no puede quedar invisible en las dos pantallas.
+
+        Filtrando solo por `programado` desaparecia de proximos al arrancar y
+        todavia no estaba en resultados: justo los noventa minutos en que mas
+        se lo busca.
+        """
+        jugando = crear_partido(db, equipos[0], equipos[1], _dias(0), externo="en-curso")
+        jugando.estado = EstadoPartido.EN_JUEGO
+        jugando.goles_local, jugando.goles_visitante = 1, 0
+        db.commit()
+
+        cuerpo = cliente.get("/partidos/proximos").json()
+        por_id = {p["id"]: p for p in cuerpo}
+        assert jugando.id in por_id
+        assert por_id[jugando.id]["estado"] == "en_juego"
+        assert por_id[jugando.id]["goles_local"] == 1
 
     def test_dias_amplia_la_ventana_hacia_los_dos_lados(self, cliente, db, equipos):
         lejos = crear_partido(db, equipos[4], equipos[5], _dias(5), externo="prog-lejos")

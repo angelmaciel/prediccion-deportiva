@@ -23,6 +23,8 @@ dependencies = [
     "scipy>=1.13",
     "scikit-learn>=1.5",
     "joblib>=1.4",
+    # Ver la nota en requirements.txt: python:3.12-slim no trae tzdata.
+    "tzdata>=2024.1",
 ]
 
 [project.optional-dependencies]

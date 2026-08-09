@@ -59,7 +59,10 @@ def construir_instantanea(
             .scalars()
         )
 
-    proximos = _traer(Partido.estado == EstadoPartido.PROGRAMADO, descendente=False)
+    proximos = _traer(
+        Partido.estado.in_((EstadoPartido.PROGRAMADO, EstadoPartido.EN_JUEGO)),
+        descendente=False,
+    )
     resultados = _traer(
         Partido.estado == EstadoPartido.FINALIZADO,
         Partido.resultado_real.is_not(None),
