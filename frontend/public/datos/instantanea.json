@@ -1,6 +1,6 @@
 {
  "dias": 3,
- "generado_en": "2026-08-13T07:15:39.221564+00:00",
+ "generado_en": "2026-08-14T07:12:09.813185+00:00",
  "ligas": [
   "Brasileirao",
   "Bundesliga",
@@ -1609,46 +1609,159 @@
    },
    "resultado_real": null,
    "temporada": "2026/2026"
-  }
- ],
- "resultados": [
+  },
   {
    "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/5530.png",
-    "id": 233,
+    "escudo_url": "https://crests.football-data.org/560.png",
+    "id": 66,
+    "liga": "La Liga",
+    "nombre": "RC Deportivo La Coruña",
+    "nombre_corto": "DEP",
+    "pais": "Espana"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/285.png",
+    "id": 87,
+    "liga": "La Liga",
+    "nombre": "Elche CF",
+    "nombre_corto": "ELC",
+    "pais": "Espana"
+   },
+   "estado": "programado",
+   "fecha": "2026-08-17T19:00:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 30596,
+   "jornada": 1,
+   "liga": "La Liga",
+   "prediccion": {
+    "confianza": 0.4300302315617262,
+    "creado_en": "2026-08-10T06:16:29.342149Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260810T0616",
+    "prob_empate": 0.3527205796436775,
+    "prob_local": 0.21724918879459637,
+    "prob_visitante": 0.4300302315617262,
+    "resultado_predicho": "V"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/715.png",
+    "id": 24,
+    "liga": "Championship",
+    "nombre": "Cardiff City FC",
+    "nombre_corto": "CAR",
+    "pais": "Inglaterra"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/404.png",
+    "id": 58,
+    "liga": "Championship",
+    "nombre": "Wrexham AFC",
+    "nombre_corto": "WRE",
+    "pais": "Inglaterra"
+   },
+   "estado": "programado",
+   "fecha": "2026-08-17T19:00:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 30050,
+   "jornada": 1,
+   "liga": "Championship",
+   "prediccion": {
+    "confianza": 0.47093993614630125,
+    "creado_en": "2026-08-10T06:16:29.342149Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260810T0616",
+    "prob_empate": 0.3504266410889808,
+    "prob_local": 0.17863342276471791,
+    "prob_visitante": 0.47093993614630125,
+    "resultado_predicho": "V"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/6618.png",
+    "id": 238,
     "liga": "Primeira Liga",
-    "nombre": "CD Santa Clara",
-    "nombre_corto": "CD ",
+    "nombre": "Casa Pia AC",
+    "nombre_corto": "CAS",
     "pais": "Portugal"
    },
    "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/5529.png",
-    "id": 216,
+    "escudo_url": "https://crests.football-data.org/1903.png",
+    "id": 394,
     "liga": "Primeira Liga",
-    "nombre": "CD Nacional",
-    "nombre_corto": "CDN",
+    "nombre": "Sport Lisboa e Benfica",
+    "nombre_corto": "BEN",
     "pais": "Portugal"
    },
-   "estado": "finalizado",
-   "fecha": "2026-08-10T19:15:00Z",
-   "goles_local": 2,
-   "goles_visitante": 2,
-   "id": 32277,
-   "jornada": 1,
+   "estado": "programado",
+   "fecha": "2026-08-17T19:15:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 32286,
+   "jornada": 2,
    "liga": "Primeira Liga",
    "prediccion": {
-    "confianza": 0.3723798041711711,
+    "confianza": 0.4829628391170973,
     "creado_en": "2026-08-10T06:16:29.342149Z",
     "marcador_probable_local": 1,
     "marcador_probable_visitante": 0,
     "modelo_version": "v20260810T0616",
-    "prob_empate": 0.3723798041711711,
-    "prob_local": 0.3496731899680222,
-    "prob_visitante": 0.27794700586080673,
+    "prob_empate": 0.3011961428873467,
+    "prob_local": 0.21584101799555597,
+    "prob_visitante": 0.4829628391170973,
+    "resultado_predicho": "V"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/6684.png",
+    "id": 402,
+    "liga": "Brasileirao",
+    "nombre": "SC Internacional",
+    "nombre_corto": "SCI",
+    "pais": "Brasil"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/4287.png",
+    "id": 405,
+    "liga": "Brasileirao",
+    "nombre": "Clube do Remo",
+    "nombre_corto": "CRE",
+    "pais": "Brasil"
+   },
+   "estado": "programado",
+   "fecha": "2026-08-17T23:00:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 32804,
+   "jornada": 23,
+   "liga": "Brasileirao",
+   "prediccion": {
+    "confianza": 0.3881953857664233,
+    "creado_en": "2026-08-10T06:16:29.342149Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 0,
+    "modelo_version": "v20260810T0616",
+    "prob_empate": 0.3881953857664233,
+    "prob_local": 0.33538920327384825,
+    "prob_visitante": 0.27641541095972844,
     "resultado_predicho": "E"
    },
-   "resultado_real": "E",
-   "temporada": "2026/2027"
+   "resultado_real": null,
+   "temporada": "2026/2026"
   }
- ]
+ ],
+ "resultados": []
 }
