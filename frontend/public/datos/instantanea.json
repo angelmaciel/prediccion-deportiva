@@ -1,6 +1,6 @@
 {
  "dias": 3,
- "generado_en": "2026-08-14T07:12:09.813185+00:00",
+ "generado_en": "2026-08-15T06:23:02.990192+00:00",
  "ligas": [
   "Brasileirao",
   "Bundesliga",
@@ -14,120 +14,6 @@
   "Serie A"
  ],
  "proximos": [
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/1912.png",
-    "id": 212,
-    "liga": "Eredivisie",
-    "nombre": "Telstar 1963",
-    "nombre_corto": "TEL",
-    "pais": "Paises Bajos"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/6806.png",
-    "id": 194,
-    "liga": "Eredivisie",
-    "nombre": "Sparta Rotterdam",
-    "nombre_corto": "SPA",
-    "pais": "Paises Bajos"
-   },
-   "estado": "programado",
-   "fecha": "2026-08-14T18:00:00Z",
-   "goles_local": null,
-   "goles_visitante": null,
-   "id": 31972,
-   "jornada": 2,
-   "liga": "Eredivisie",
-   "prediccion": {
-    "confianza": 0.4029198330600046,
-    "creado_en": "2026-08-10T06:16:29.342149Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260810T0616",
-    "prob_empate": 0.2968603082174196,
-    "prob_local": 0.4029198330600046,
-    "prob_visitante": 0.30021985872257584,
-    "resultado_predicho": "L"
-   },
-   "resultado_real": null,
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/76.png",
-    "id": 26,
-    "liga": "Championship",
-    "nombre": "Wolverhampton Wanderers FC",
-    "nombre_corto": "WOL",
-    "pais": "Inglaterra"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/59.png",
-    "id": 36,
-    "liga": "Championship",
-    "nombre": "Blackburn Rovers FC",
-    "nombre_corto": "BLA",
-    "pais": "Inglaterra"
-   },
-   "estado": "programado",
-   "fecha": "2026-08-14T19:00:00Z",
-   "goles_local": null,
-   "goles_visitante": null,
-   "id": 30039,
-   "jornada": 1,
-   "liga": "Championship",
-   "prediccion": {
-    "confianza": 0.40446333991957273,
-    "creado_en": "2026-08-10T06:16:29.342149Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260810T0616",
-    "prob_empate": 0.3747249933370422,
-    "prob_local": 0.40446333991957273,
-    "prob_visitante": 0.22081166674338507,
-    "resultado_predicho": "L"
-   },
-   "resultado_real": null,
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/498.png",
-    "id": 214,
-    "liga": "Primeira Liga",
-    "nombre": "Sporting Clube de Portugal",
-    "nombre_corto": "SPO",
-    "pais": "Portugal"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/5543.png",
-    "id": 221,
-    "liga": "Primeira Liga",
-    "nombre": "Vitória SC",
-    "nombre_corto": "GUI",
-    "pais": "Portugal"
-   },
-   "estado": "programado",
-   "fecha": "2026-08-14T19:15:00Z",
-   "goles_local": null,
-   "goles_visitante": null,
-   "id": 32278,
-   "jornada": 2,
-   "liga": "Primeira Liga",
-   "prediccion": {
-    "confianza": 0.765746380697932,
-    "creado_en": "2026-08-10T06:16:29.342149Z",
-    "marcador_probable_local": 2,
-    "marcador_probable_visitante": 0,
-    "modelo_version": "v20260810T0616",
-    "prob_empate": 0.17572660820519273,
-    "prob_local": 0.765746380697932,
-    "prob_visitante": 0.05852701109687526,
-    "resultado_predicho": "L"
-   },
-   "resultado_real": null,
-   "temporada": "2026/2027"
-  },
   {
    "equipo_local": {
     "escudo_url": "https://crests.football-data.org/60.png",
@@ -1384,44 +1270,6 @@
   },
   {
    "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/558.png",
-    "id": 76,
-    "liga": "La Liga",
-    "nombre": "RC Celta de Vigo",
-    "nombre_corto": "CEL",
-    "pais": "Espana"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/79.png",
-    "id": 77,
-    "liga": "La Liga",
-    "nombre": "CA Osasuna",
-    "nombre_corto": "OSA",
-    "pais": "Espana"
-   },
-   "estado": "programado",
-   "fecha": "2026-08-16T19:30:00Z",
-   "goles_local": null,
-   "goles_visitante": null,
-   "id": 30595,
-   "jornada": 1,
-   "liga": "La Liga",
-   "prediccion": {
-    "confianza": 0.3722717711313294,
-    "creado_en": "2026-08-10T06:16:29.342149Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260810T0616",
-    "prob_empate": 0.3722717711313294,
-    "prob_local": 0.33482518889388535,
-    "prob_visitante": 0.2929030399747852,
-    "resultado_predicho": "E"
-   },
-   "resultado_real": null,
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
     "escudo_url": "https://crests.football-data.org/5531.png",
     "id": 234,
     "liga": "Primeira Liga",
@@ -1763,5 +1611,120 @@
    "temporada": "2026/2026"
   }
  ],
- "resultados": []
+ "resultados": [
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/498.png",
+    "id": 214,
+    "liga": "Primeira Liga",
+    "nombre": "Sporting Clube de Portugal",
+    "nombre_corto": "SPO",
+    "pais": "Portugal"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/5543.png",
+    "id": 221,
+    "liga": "Primeira Liga",
+    "nombre": "Vitória SC",
+    "nombre_corto": "GUI",
+    "pais": "Portugal"
+   },
+   "estado": "finalizado",
+   "fecha": "2026-08-14T19:15:00Z",
+   "goles_local": 3,
+   "goles_visitante": 2,
+   "id": 32278,
+   "jornada": 2,
+   "liga": "Primeira Liga",
+   "prediccion": {
+    "confianza": 0.765746380697932,
+    "creado_en": "2026-08-10T06:16:29.342149Z",
+    "marcador_probable_local": 2,
+    "marcador_probable_visitante": 0,
+    "modelo_version": "v20260810T0616",
+    "prob_empate": 0.17572660820519273,
+    "prob_local": 0.765746380697932,
+    "prob_visitante": 0.05852701109687526,
+    "resultado_predicho": "L"
+   },
+   "resultado_real": "L",
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/76.png",
+    "id": 26,
+    "liga": "Championship",
+    "nombre": "Wolverhampton Wanderers FC",
+    "nombre_corto": "WOL",
+    "pais": "Inglaterra"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/59.png",
+    "id": 36,
+    "liga": "Championship",
+    "nombre": "Blackburn Rovers FC",
+    "nombre_corto": "BLA",
+    "pais": "Inglaterra"
+   },
+   "estado": "finalizado",
+   "fecha": "2026-08-14T19:00:00Z",
+   "goles_local": 2,
+   "goles_visitante": 2,
+   "id": 30039,
+   "jornada": 1,
+   "liga": "Championship",
+   "prediccion": {
+    "confianza": 0.40446333991957273,
+    "creado_en": "2026-08-10T06:16:29.342149Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260810T0616",
+    "prob_empate": 0.3747249933370422,
+    "prob_local": 0.40446333991957273,
+    "prob_visitante": 0.22081166674338507,
+    "resultado_predicho": "L"
+   },
+   "resultado_real": "E",
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/1912.png",
+    "id": 212,
+    "liga": "Eredivisie",
+    "nombre": "Telstar 1963",
+    "nombre_corto": "TEL",
+    "pais": "Paises Bajos"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/6806.png",
+    "id": 194,
+    "liga": "Eredivisie",
+    "nombre": "Sparta Rotterdam",
+    "nombre_corto": "SPA",
+    "pais": "Paises Bajos"
+   },
+   "estado": "finalizado",
+   "fecha": "2026-08-14T18:00:00Z",
+   "goles_local": 1,
+   "goles_visitante": 3,
+   "id": 31972,
+   "jornada": 2,
+   "liga": "Eredivisie",
+   "prediccion": {
+    "confianza": 0.4029198330600046,
+    "creado_en": "2026-08-10T06:16:29.342149Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260810T0616",
+    "prob_empate": 0.2968603082174196,
+    "prob_local": 0.4029198330600046,
+    "prob_visitante": 0.30021985872257584,
+    "resultado_predicho": "L"
+   },
+   "resultado_real": "V",
+   "temporada": "2026/2027"
+  }
+ ]
 }
