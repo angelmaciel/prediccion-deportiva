@@ -1,6 +1,6 @@
 {
  "dias": 3,
- "generado_en": "2026-08-21T06:32:39.148539+00:00",
+ "generado_en": "2026-08-22T06:25:53.843649+00:00",
  "ligas": [
   "Brasileirao",
   "Bundesliga",
@@ -14,120 +14,6 @@
   "Serie A"
  ],
  "proximos": [
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/516.png",
-    "id": 344,
-    "liga": "Ligue 1",
-    "nombre": "Olympique de Marseille",
-    "nombre_corto": "MAR",
-    "pais": "Francia"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/576.png",
-    "id": 345,
-    "liga": "Ligue 1",
-    "nombre": "RC Strasbourg Alsace",
-    "nombre_corto": "RC ",
-    "pais": "Francia"
-   },
-   "estado": "programado",
-   "fecha": "2026-08-21T18:45:00Z",
-   "goles_local": null,
-   "goles_visitante": null,
-   "id": 31657,
-   "jornada": 1,
-   "liga": "Ligue 1",
-   "prediccion": {
-    "confianza": 0.4328684453775984,
-    "creado_en": "2026-08-17T05:40:46.591359Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260817T0540",
-    "prob_empate": 0.4328684453775984,
-    "prob_local": 0.2846624551000631,
-    "prob_visitante": 0.28246909952233856,
-    "resultado_predicho": "E"
-   },
-   "resultado_real": null,
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/90.png",
-    "id": 70,
-    "liga": "La Liga",
-    "nombre": "Real Betis Balompié",
-    "nombre_corto": "BET",
-    "pais": "Espana"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/92.png",
-    "id": 73,
-    "liga": "La Liga",
-    "nombre": "Real Sociedad de Fútbol",
-    "nombre_corto": "RSO",
-    "pais": "Espana"
-   },
-   "estado": "programado",
-   "fecha": "2026-08-21T19:00:00Z",
-   "goles_local": null,
-   "goles_visitante": null,
-   "id": 30599,
-   "jornada": 2,
-   "liga": "La Liga",
-   "prediccion": {
-    "confianza": 0.37643679794136475,
-    "creado_en": "2026-08-17T05:40:46.591359Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260817T0540",
-    "prob_empate": 0.3735691543681977,
-    "prob_local": 0.37643679794136475,
-    "prob_visitante": 0.24999404769043757,
-    "resultado_predicho": "L"
-   },
-   "resultado_real": null,
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/57.png",
-    "id": 15,
-    "liga": "Premier League",
-    "nombre": "Arsenal FC",
-    "nombre_corto": "ARS",
-    "pais": "Inglaterra"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/1076.png",
-    "id": 51,
-    "liga": "Premier League",
-    "nombre": "Coventry City FC",
-    "nombre_corto": "COV",
-    "pais": "Inglaterra"
-   },
-   "estado": "programado",
-   "fecha": "2026-08-21T19:00:00Z",
-   "goles_local": null,
-   "goles_visitante": null,
-   "id": 29659,
-   "jornada": 1,
-   "liga": "Premier League",
-   "prediccion": {
-    "confianza": 0.6301486756528326,
-    "creado_en": "2026-08-17T05:40:46.591359Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 0,
-    "modelo_version": "v20260817T0540",
-    "prob_empate": 0.2584481489870966,
-    "prob_local": 0.6301486756528326,
-    "prob_visitante": 0.11140317536007081,
-    "resultado_predicho": "L"
-   },
-   "resultado_real": null,
-   "temporada": "2026/2027"
-  },
   {
    "equipo_local": {
     "escudo_url": "https://crests.football-data.org/332.png",
@@ -2787,9 +2673,161 @@
    },
    "resultado_real": null,
    "temporada": "2026/2026"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/95.png",
+    "id": 65,
+    "liga": "La Liga",
+    "nombre": "Valencia CF",
+    "nombre_corto": "VAL",
+    "pais": "Espana"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/90.png",
+    "id": 70,
+    "liga": "La Liga",
+    "nombre": "Real Betis Balompié",
+    "nombre_corto": "BET",
+    "pais": "Espana"
+   },
+   "estado": "programado",
+   "fecha": "2026-08-25T19:00:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 30608,
+   "jornada": 1,
+   "liga": "La Liga",
+   "prediccion": {
+    "confianza": 0.4144189321490103,
+    "creado_en": "2026-08-17T05:40:46.591359Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260817T0540",
+    "prob_empate": 0.36471043965870065,
+    "prob_local": 0.22087062819228903,
+    "prob_visitante": 0.4144189321490103,
+    "resultado_predicho": "V"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
   }
  ],
  "resultados": [
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/57.png",
+    "id": 15,
+    "liga": "Premier League",
+    "nombre": "Arsenal FC",
+    "nombre_corto": "ARS",
+    "pais": "Inglaterra"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/1076.png",
+    "id": 51,
+    "liga": "Premier League",
+    "nombre": "Coventry City FC",
+    "nombre_corto": "COV",
+    "pais": "Inglaterra"
+   },
+   "estado": "finalizado",
+   "fecha": "2026-08-21T19:00:00Z",
+   "goles_local": 3,
+   "goles_visitante": 0,
+   "id": 29659,
+   "jornada": 1,
+   "liga": "Premier League",
+   "prediccion": {
+    "confianza": 0.6301486756528326,
+    "creado_en": "2026-08-17T05:40:46.591359Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 0,
+    "modelo_version": "v20260817T0540",
+    "prob_empate": 0.2584481489870966,
+    "prob_local": 0.6301486756528326,
+    "prob_visitante": 0.11140317536007081,
+    "resultado_predicho": "L"
+   },
+   "resultado_real": "L",
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/90.png",
+    "id": 70,
+    "liga": "La Liga",
+    "nombre": "Real Betis Balompié",
+    "nombre_corto": "BET",
+    "pais": "Espana"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/92.png",
+    "id": 73,
+    "liga": "La Liga",
+    "nombre": "Real Sociedad de Fútbol",
+    "nombre_corto": "RSO",
+    "pais": "Espana"
+   },
+   "estado": "finalizado",
+   "fecha": "2026-08-21T19:00:00Z",
+   "goles_local": 1,
+   "goles_visitante": 0,
+   "id": 30599,
+   "jornada": 2,
+   "liga": "La Liga",
+   "prediccion": {
+    "confianza": 0.37643679794136475,
+    "creado_en": "2026-08-17T05:40:46.591359Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260817T0540",
+    "prob_empate": 0.3735691543681977,
+    "prob_local": 0.37643679794136475,
+    "prob_visitante": 0.24999404769043757,
+    "resultado_predicho": "L"
+   },
+   "resultado_real": "L",
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/516.png",
+    "id": 344,
+    "liga": "Ligue 1",
+    "nombre": "Olympique de Marseille",
+    "nombre_corto": "MAR",
+    "pais": "Francia"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/576.png",
+    "id": 345,
+    "liga": "Ligue 1",
+    "nombre": "RC Strasbourg Alsace",
+    "nombre_corto": "RC ",
+    "pais": "Francia"
+   },
+   "estado": "finalizado",
+   "fecha": "2026-08-21T18:45:00Z",
+   "goles_local": 4,
+   "goles_visitante": 0,
+   "id": 31657,
+   "jornada": 1,
+   "liga": "Ligue 1",
+   "prediccion": {
+    "confianza": 0.4328684453775984,
+    "creado_en": "2026-08-17T05:40:46.591359Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260817T0540",
+    "prob_empate": 0.4328684453775984,
+    "prob_local": 0.2846624551000631,
+    "prob_visitante": 0.28246909952233856,
+    "resultado_predicho": "E"
+   },
+   "resultado_real": "L",
+   "temporada": "2026/2027"
+  },
   {
    "equipo_local": {
     "escudo_url": "https://crests.football-data.org/87.png",
