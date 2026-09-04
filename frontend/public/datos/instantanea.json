@@ -1,6 +1,6 @@
 {
  "dias": 3,
- "generado_en": "2026-09-03T10:27:36.208406+00:00",
+ "generado_en": "2026-09-04T10:13:12.666864+00:00",
  "ligas": [
   "Brasileirao",
   "Bundesliga",
@@ -14,44 +14,6 @@
   "Serie A"
  ],
  "proximos": [
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/511.png",
-    "id": 162,
-    "liga": "Ligue 1",
-    "nombre": "Toulouse FC",
-    "nombre_corto": "TOU",
-    "pais": "Francia"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/521.png",
-    "id": 357,
-    "liga": "Champions League",
-    "nombre": "Lille OSC",
-    "nombre_corto": "LIL",
-    "pais": "Francia"
-   },
-   "estado": "programado",
-   "fecha": "2026-09-03T18:45:00Z",
-   "goles_local": null,
-   "goles_visitante": null,
-   "id": 31678,
-   "jornada": 3,
-   "liga": "Ligue 1",
-   "prediccion": {
-    "confianza": 0.3690066038601104,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.3690066038601104,
-    "prob_local": 0.3156190457140556,
-    "prob_visitante": 0.315374350425834,
-    "resultado_predicho": "E"
-   },
-   "resultado_real": null,
-   "temporada": "2026/2027"
-  },
   {
    "equipo_local": {
     "escudo_url": "https://crests.football-data.org/92.png",
@@ -71,8 +33,8 @@
    },
    "estado": "programado",
    "fecha": "2026-09-03T19:00:00Z",
-   "goles_local": null,
-   "goles_visitante": null,
+   "goles_local": 0,
+   "goles_visitante": 0,
    "id": 30645,
    "jornada": 6,
    "liga": "La Liga",
@@ -3167,9 +3129,275 @@
    },
    "resultado_real": null,
    "temporada": "2026/2026"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/104.png",
+    "id": 103,
+    "liga": "Serie A",
+    "nombre": "Cagliari Calcio",
+    "nombre_corto": "CAG",
+    "pais": "Italia"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/5890.png",
+    "id": 116,
+    "liga": "Serie A",
+    "nombre": "US Lecce",
+    "nombre_corto": "USL",
+    "pais": "Italia"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-07T16:30:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 30999,
+   "jornada": 3,
+   "liga": "Serie A",
+   "prediccion": {
+    "confianza": 0.41534117676102955,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 0,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.41534117676102955,
+    "prob_local": 0.2985498657382729,
+    "prob_visitante": 0.28610895750069765,
+    "resultado_predicho": "E"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/82.png",
+    "id": 79,
+    "liga": "La Liga",
+    "nombre": "Getafe CF",
+    "nombre_corto": "GET",
+    "pais": "Espana"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/558.png",
+    "id": 76,
+    "liga": "La Liga",
+    "nombre": "RC Celta de Vigo",
+    "nombre_corto": "CEL",
+    "pais": "Espana"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-07T17:00:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 30628,
+   "jornada": 4,
+   "liga": "La Liga",
+   "prediccion": {
+    "confianza": 0.39602380885399024,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 0,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.39602380885399024,
+    "prob_local": 0.25766365798403706,
+    "prob_visitante": 0.3463125331619727,
+    "resultado_predicho": "E"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/115.png",
+    "id": 106,
+    "liga": "Serie A",
+    "nombre": "Udinese Calcio",
+    "nombre_corto": "UDI",
+    "pais": "Italia"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/110.png",
+    "id": 99,
+    "liga": "Serie A",
+    "nombre": "SS Lazio",
+    "nombre_corto": "LAZ",
+    "pais": "Italia"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-07T18:45:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 31000,
+   "jornada": 3,
+   "liga": "Serie A",
+   "prediccion": {
+    "confianza": 0.39667942839578363,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.39667942839578363,
+    "prob_local": 0.2663107896306697,
+    "prob_visitante": 0.3370097819735466,
+    "resultado_predicho": "E"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/582.png",
+    "id": 380,
+    "liga": "Primeira Liga",
+    "nombre": "GD Estoril Praia",
+    "nombre_corto": "EST",
+    "pais": "Portugal"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/712.png",
+    "id": 230,
+    "liga": "Primeira Liga",
+    "nombre": "FC Arouca",
+    "nombre_corto": "FCA",
+    "pais": "Portugal"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-07T19:15:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 32311,
+   "jornada": 5,
+   "liga": "Primeira Liga",
+   "prediccion": {
+    "confianza": 0.42154806253660543,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 0,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.3481428965503743,
+    "prob_local": 0.2303090409130203,
+    "prob_visitante": 0.42154806253660543,
+    "resultado_predicho": "V"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/285.png",
+    "id": 87,
+    "liga": "La Liga",
+    "nombre": "Elche CF",
+    "nombre_corto": "ELC",
+    "pais": "Espana"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/92.png",
+    "id": 73,
+    "liga": "La Liga",
+    "nombre": "Real Sociedad de Fútbol",
+    "nombre_corto": "RSO",
+    "pais": "Espana"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-07T19:30:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 30621,
+   "jornada": 4,
+   "liga": "La Liga",
+   "prediccion": {
+    "confianza": 0.4197690667455011,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 0,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.35550279187629297,
+    "prob_local": 0.22472814137820596,
+    "prob_visitante": 0.4197690667455011,
+    "resultado_predicho": "V"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/1782.png",
+    "id": 404,
+    "liga": "Brasileirao",
+    "nombre": "EC Vitória",
+    "nombre_corto": "VIT",
+    "pais": "Brasil"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/1767.png",
+    "id": 407,
+    "liga": "Brasileirao",
+    "nombre": "Grêmio FBPA",
+    "nombre_corto": "FBP",
+    "pais": "Brasil"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-07T23:00:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 32834,
+   "jornada": 26,
+   "liga": "Brasileirao",
+   "prediccion": {
+    "confianza": 0.37922138688325246,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 0,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.37922138688325246,
+    "prob_local": 0.2861624648607125,
+    "prob_visitante": 0.3346161482560351,
+    "resultado_predicho": "E"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2026"
   }
  ],
  "resultados": [
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/511.png",
+    "id": 162,
+    "liga": "Ligue 1",
+    "nombre": "Toulouse FC",
+    "nombre_corto": "TOU",
+    "pais": "Francia"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/521.png",
+    "id": 357,
+    "liga": "Champions League",
+    "nombre": "Lille OSC",
+    "nombre_corto": "LIL",
+    "pais": "Francia"
+   },
+   "estado": "finalizado",
+   "fecha": "2026-09-03T18:45:00Z",
+   "goles_local": 0,
+   "goles_visitante": 1,
+   "id": 31678,
+   "jornada": 3,
+   "liga": "Ligue 1",
+   "prediccion": {
+    "confianza": 0.3690066038601104,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.3690066038601104,
+    "prob_local": 0.3156190457140556,
+    "prob_visitante": 0.315374350425834,
+    "resultado_predicho": "E"
+   },
+   "resultado_real": "V",
+   "temporada": "2026/2027"
+  },
   {
    "equipo_local": {
     "escudo_url": "https://crests.football-data.org/1783.png",
@@ -3662,310 +3890,6 @@
     "resultado_predicho": "L"
    },
    "resultado_real": "L",
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/4287.png",
-    "id": 405,
-    "liga": "Brasileirao",
-    "nombre": "Clube do Remo",
-    "nombre_corto": "CRE",
-    "pais": "Brasil"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/4241.png",
-    "id": 400,
-    "liga": "Brasileirao",
-    "nombre": "Coritiba FBC",
-    "nombre_corto": "COR",
-    "pais": "Brasil"
-   },
-   "estado": "finalizado",
-   "fecha": "2026-08-31T23:00:00Z",
-   "goles_local": 2,
-   "goles_visitante": 3,
-   "id": 32822,
-   "jornada": 25,
-   "liga": "Brasileirao",
-   "prediccion": {
-    "confianza": 0.3554519235135752,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.3554519235135752,
-    "prob_local": 0.2913314350052932,
-    "prob_visitante": 0.35321664148113174,
-    "resultado_predicho": "E"
-   },
-   "resultado_real": "V",
-   "temporada": "2026/2026"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/81.png",
-    "id": 64,
-    "liga": "Champions League",
-    "nombre": "FC Barcelona",
-    "nombre_corto": "FCB",
-    "pais": "Espana"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/87.png",
-    "id": 289,
-    "liga": "La Liga",
-    "nombre": "Rayo Vallecano de Madrid",
-    "nombre_corto": "RAY",
-    "pais": "Espana"
-   },
-   "estado": "finalizado",
-   "fecha": "2026-08-31T19:30:00Z",
-   "goles_local": 5,
-   "goles_visitante": 2,
-   "id": 30620,
-   "jornada": 3,
-   "liga": "La Liga",
-   "prediccion": {
-    "confianza": 0.725500666957628,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 2,
-    "marcador_probable_visitante": 0,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.19910602435649877,
-    "prob_local": 0.725500666957628,
-    "prob_visitante": 0.07539330868587311,
-    "resultado_predicho": "L"
-   },
-   "resultado_real": "L",
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/5613.png",
-    "id": 391,
-    "liga": "Primeira Liga",
-    "nombre": "Sporting Clube de Braga",
-    "nombre_corto": "SCB",
-    "pais": "Portugal"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/5543.png",
-    "id": 221,
-    "liga": "Primeira Liga",
-    "nombre": "Vitória SC",
-    "nombre_corto": "GUI",
-    "pais": "Portugal"
-   },
-   "estado": "finalizado",
-   "fecha": "2026-08-31T19:15:00Z",
-   "goles_local": 1,
-   "goles_visitante": 0,
-   "id": 32302,
-   "jornada": 4,
-   "liga": "Primeira Liga",
-   "prediccion": {
-    "confianza": 0.36824565206215865,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 2,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.34296204527364504,
-    "prob_local": 0.36824565206215865,
-    "prob_visitante": 0.28879230266419637,
-    "resultado_predicho": "L"
-   },
-   "resultado_real": "L",
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/1903.png",
-    "id": 394,
-    "liga": "Primeira Liga",
-    "nombre": "Sport Lisboa e Benfica",
-    "nombre_corto": "BEN",
-    "pais": "Portugal"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/582.png",
-    "id": 380,
-    "liga": "Primeira Liga",
-    "nombre": "GD Estoril Praia",
-    "nombre_corto": "EST",
-    "pais": "Portugal"
-   },
-   "estado": "finalizado",
-   "fecha": "2026-08-31T19:15:00Z",
-   "goles_local": 2,
-   "goles_visitante": 1,
-   "id": 32301,
-   "jornada": 4,
-   "liga": "Primeira Liga",
-   "prediccion": {
-    "confianza": 0.4917037593912019,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 2,
-    "marcador_probable_visitante": 0,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.3102602226018293,
-    "prob_local": 0.4917037593912019,
-    "prob_visitante": 0.19803601800696882,
-    "resultado_predicho": "L"
-   },
-   "resultado_real": "L",
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/58.png",
-    "id": 29,
-    "liga": "Champions League",
-    "nombre": "Aston Villa FC",
-    "nombre_corto": "AVL",
-    "pais": "Inglaterra"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/57.png",
-    "id": 15,
-    "liga": "Champions League",
-    "nombre": "Arsenal FC",
-    "nombre_corto": "ARS",
-    "pais": "Inglaterra"
-   },
-   "estado": "finalizado",
-   "fecha": "2026-08-31T19:00:00Z",
-   "goles_local": 0,
-   "goles_visitante": 1,
-   "id": 29678,
-   "jornada": 2,
-   "liga": "Premier League",
-   "prediccion": {
-    "confianza": 0.5845243720362654,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.25991864088625666,
-    "prob_local": 0.15555698707747792,
-    "prob_visitante": 0.5845243720362654,
-    "resultado_predicho": "V"
-   },
-   "resultado_real": "V",
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/102.png",
-    "id": 318,
-    "liga": "Serie A",
-    "nombre": "Atalanta BC",
-    "nombre_corto": "ATA",
-    "pais": "Italia"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/103.png",
-    "id": 107,
-    "liga": "Serie A",
-    "nombre": "Bologna FC 1909",
-    "nombre_corto": "BOL",
-    "pais": "Italia"
-   },
-   "estado": "finalizado",
-   "fecha": "2026-08-31T18:45:00Z",
-   "goles_local": 1,
-   "goles_visitante": 0,
-   "id": 30990,
-   "jornada": 2,
-   "liga": "Serie A",
-   "prediccion": {
-    "confianza": 0.3766184815487707,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.3485873684463068,
-    "prob_local": 0.2747941500049226,
-    "prob_visitante": 0.3766184815487707,
-    "resultado_predicho": "V"
-   },
-   "resultado_real": "L",
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/79.png",
-    "id": 77,
-    "liga": "La Liga",
-    "nombre": "CA Osasuna",
-    "nombre_corto": "OSA",
-    "pais": "Espana"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/82.png",
-    "id": 79,
-    "liga": "La Liga",
-    "nombre": "Getafe CF",
-    "nombre_corto": "GET",
-    "pais": "Espana"
-   },
-   "estado": "finalizado",
-   "fecha": "2026-08-31T17:30:00Z",
-   "goles_local": 1,
-   "goles_visitante": 0,
-   "id": 30619,
-   "jornada": 3,
-   "liga": "La Liga",
-   "prediccion": {
-    "confianza": 0.36035412801856065,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 0,
-    "marcador_probable_visitante": 0,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.36035412801856065,
-    "prob_local": 0.30330898832588504,
-    "prob_visitante": 0.33633688365555425,
-    "resultado_predicho": "E"
-   },
-   "resultado_real": "L",
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/5890.png",
-    "id": 116,
-    "liga": "Serie A",
-    "nombre": "US Lecce",
-    "nombre_corto": "USL",
-    "pais": "Italia"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/100.png",
-    "id": 90,
-    "liga": "Champions League",
-    "nombre": "AS Roma",
-    "nombre_corto": "ROM",
-    "pais": "Italia"
-   },
-   "estado": "finalizado",
-   "fecha": "2026-08-31T16:30:00Z",
-   "goles_local": 0,
-   "goles_visitante": 4,
-   "id": 30989,
-   "jornada": 2,
-   "liga": "Serie A",
-   "prediccion": {
-    "confianza": 0.6236846806036163,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 0,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.2850492911535735,
-    "prob_local": 0.09126602824281024,
-    "prob_visitante": 0.6236846806036163,
-    "resultado_predicho": "V"
-   },
-   "resultado_real": "V",
    "temporada": "2026/2027"
   }
  ]
