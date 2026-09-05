@@ -1,6 +1,6 @@
 {
  "dias": 3,
- "generado_en": "2026-09-04T10:13:12.666864+00:00",
+ "generado_en": "2026-09-05T09:43:42.990924+00:00",
  "ligas": [
   "Brasileirao",
   "Bundesliga",
@@ -14,348 +14,6 @@
   "Serie A"
  ],
  "proximos": [
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/92.png",
-    "id": 73,
-    "liga": "La Liga",
-    "nombre": "Real Sociedad de Fútbol",
-    "nombre_corto": "RSO",
-    "pais": "Espana"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/558.png",
-    "id": 76,
-    "liga": "La Liga",
-    "nombre": "RC Celta de Vigo",
-    "nombre_corto": "CEL",
-    "pais": "Espana"
-   },
-   "estado": "programado",
-   "fecha": "2026-09-03T19:00:00Z",
-   "goles_local": 0,
-   "goles_visitante": 0,
-   "id": 30645,
-   "jornada": 6,
-   "liga": "La Liga",
-   "prediccion": {
-    "confianza": 0.3618654764877675,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.3618654764877675,
-    "prob_local": 0.28935078351727805,
-    "prob_visitante": 0.3487837399949544,
-    "resultado_predicho": "E"
-   },
-   "resultado_real": null,
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/523.png",
-    "id": 355,
-    "liga": "Ligue 1",
-    "nombre": "Olympique Lyonnais",
-    "nombre_corto": "LYO",
-    "pais": "Francia"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/519.png",
-    "id": 347,
-    "liga": "Ligue 1",
-    "nombre": "AJ Auxerre",
-    "nombre_corto": "AJA",
-    "pais": "Francia"
-   },
-   "estado": "programado",
-   "fecha": "2026-09-04T17:00:00Z",
-   "goles_local": null,
-   "goles_visitante": null,
-   "id": 31681,
-   "jornada": 3,
-   "liga": "Ligue 1",
-   "prediccion": {
-    "confianza": 0.5394384815687298,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 7,
-    "marcador_probable_visitante": 0,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.266699230945936,
-    "prob_local": 0.5394384815687298,
-    "prob_visitante": 0.1938622874853342,
-    "resultado_predicho": "L"
-   },
-   "resultado_real": null,
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/6806.png",
-    "id": 194,
-    "liga": "Eredivisie",
-    "nombre": "Sparta Rotterdam",
-    "nombre_corto": "SPA",
-    "pais": "Paises Bajos"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/684.png",
-    "id": 196,
-    "liga": "Eredivisie",
-    "nombre": "PEC Zwolle",
-    "nombre_corto": "ZWO",
-    "pais": "Paises Bajos"
-   },
-   "estado": "programado",
-   "fecha": "2026-09-04T18:00:00Z",
-   "goles_local": null,
-   "goles_visitante": null,
-   "id": 31997,
-   "jornada": 5,
-   "liga": "Eredivisie",
-   "prediccion": {
-    "confianza": 0.36927478994569973,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.36927478994569973,
-    "prob_local": 0.33306249023615947,
-    "prob_visitante": 0.29766271981814085,
-    "resultado_predicho": "E"
-   },
-   "resultado_real": null,
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/10.png",
-    "id": 143,
-    "liga": "Champions League",
-    "nombre": "VfB Stuttgart",
-    "nombre_corto": "VFB",
-    "pais": "Alemania"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/1.png",
-    "id": 135,
-    "liga": "Bundesliga",
-    "nombre": "1. FC Köln",
-    "nombre_corto": "KOE",
-    "pais": "Alemania"
-   },
-   "estado": "programado",
-   "fecha": "2026-09-04T18:30:00Z",
-   "goles_local": null,
-   "goles_visitante": null,
-   "id": 31360,
-   "jornada": 2,
-   "liga": "Bundesliga",
-   "prediccion": {
-    "confianza": 0.5776277087265645,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 2,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.2680550851033142,
-    "prob_local": 0.5776277087265645,
-    "prob_visitante": 0.15431720617012123,
-    "resultado_predicho": "L"
-   },
-   "resultado_real": null,
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/107.png",
-    "id": 310,
-    "liga": "Serie A",
-    "nombre": "Genoa CFC",
-    "nombre_corto": "GEN",
-    "pais": "Italia"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/7397.png",
-    "id": 122,
-    "liga": "Champions League",
-    "nombre": "Como 1907",
-    "nombre_corto": "COM",
-    "pais": "Italia"
-   },
-   "estado": "programado",
-   "fecha": "2026-09-04T18:45:00Z",
-   "goles_local": null,
-   "goles_visitante": null,
-   "id": 30991,
-   "jornada": 3,
-   "liga": "Serie A",
-   "prediccion": {
-    "confianza": 0.559473954535286,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 0,
-    "marcador_probable_visitante": 2,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.3021425351405957,
-    "prob_local": 0.13838351032411825,
-    "prob_visitante": 0.559473954535286,
-    "resultado_predicho": "V"
-   },
-   "resultado_real": null,
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/90.png",
-    "id": 70,
-    "liga": "Champions League",
-    "nombre": "Real Betis Balompié",
-    "nombre_corto": "BET",
-    "pais": "Espana"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/86.png",
-    "id": 67,
-    "liga": "Champions League",
-    "nombre": "Real Madrid CF",
-    "nombre_corto": "RMA",
-    "pais": "Espana"
-   },
-   "estado": "programado",
-   "fecha": "2026-09-04T19:00:00Z",
-   "goles_local": null,
-   "goles_visitante": null,
-   "id": 30630,
-   "jornada": 4,
-   "liga": "La Liga",
-   "prediccion": {
-    "confianza": 0.49581721474215257,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.3485015823117871,
-    "prob_local": 0.1556812029460604,
-    "prob_visitante": 0.49581721474215257,
-    "resultado_predicho": "V"
-   },
-   "resultado_real": null,
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/349.png",
-    "id": 35,
-    "liga": "Premier League",
-    "nombre": "Ipswich Town FC",
-    "nombre_corto": "IPS",
-    "pais": "Inglaterra"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/64.png",
-    "id": 16,
-    "liga": "Champions League",
-    "nombre": "Liverpool FC",
-    "nombre_corto": "LIV",
-    "pais": "Inglaterra"
-   },
-   "estado": "programado",
-   "fecha": "2026-09-04T19:00:00Z",
-   "goles_local": null,
-   "goles_visitante": null,
-   "id": 29679,
-   "jornada": 3,
-   "liga": "Premier League",
-   "prediccion": {
-    "confianza": 0.5245235098353512,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.3013310201959961,
-    "prob_local": 0.17414546996865268,
-    "prob_visitante": 0.5245235098353512,
-    "resultado_predicho": "V"
-   },
-   "resultado_real": null,
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/524.png",
-    "id": 168,
-    "liga": "Champions League",
-    "nombre": "Paris Saint-Germain FC",
-    "nombre_corto": "PSG",
-    "pais": "Francia"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/548.png",
-    "id": 155,
-    "liga": "Ligue 1",
-    "nombre": "AS Monaco FC",
-    "nombre_corto": "ASM",
-    "pais": "Francia"
-   },
-   "estado": "programado",
-   "fecha": "2026-09-04T19:05:00Z",
-   "goles_local": null,
-   "goles_visitante": null,
-   "id": 31679,
-   "jornada": 3,
-   "liga": "Ligue 1",
-   "prediccion": {
-    "confianza": 0.6067152933975108,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 2,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.2547201358403419,
-    "prob_local": 0.6067152933975108,
-    "prob_visitante": 0.13856457076214734,
-    "resultado_predicho": "L"
-   },
-   "resultado_real": null,
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/503.png",
-    "id": 226,
-    "liga": "Champions League",
-    "nombre": "FC Porto",
-    "nombre_corto": "FCP",
-    "pais": "Portugal"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/583.png",
-    "id": 218,
-    "liga": "Primeira Liga",
-    "nombre": "Moreirense FC",
-    "nombre_corto": "MOR",
-    "pais": "Portugal"
-   },
-   "estado": "programado",
-   "fecha": "2026-09-04T19:15:00Z",
-   "goles_local": null,
-   "goles_visitante": null,
-   "id": 32306,
-   "jornada": 5,
-   "liga": "Primeira Liga",
-   "prediccion": {
-    "confianza": 0.7249500198171446,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 2,
-    "marcador_probable_visitante": 0,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.20709746106957236,
-    "prob_local": 0.7249500198171446,
-    "prob_visitante": 0.06795251911328308,
-    "resultado_predicho": "L"
-   },
-   "resultado_real": null,
-   "temporada": "2026/2027"
-  },
   {
    "equipo_local": {
     "escudo_url": "https://crests.football-data.org/70.png",
@@ -3357,9 +3015,845 @@
    },
    "resultado_real": null,
    "temporada": "2026/2026"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/1915.png",
+    "id": 195,
+    "liga": "Eredivisie",
+    "nombre": "NEC",
+    "nombre_corto": "NEC",
+    "pais": "Paises Bajos"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/670.png",
+    "id": 185,
+    "liga": "Eredivisie",
+    "nombre": "SBV Excelsior",
+    "nombre_corto": "EXC",
+    "pais": "Paises Bajos"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-08T16:45:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 31983,
+   "jornada": 3,
+   "liga": "Eredivisie",
+   "prediccion": {
+    "confianza": 0.4638190269581373,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 2,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.330578008375889,
+    "prob_local": 0.4638190269581373,
+    "prob_visitante": 0.20560296466597366,
+    "resultado_predicho": "L"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/851.png",
+    "id": 425,
+    "liga": "Champions League",
+    "nombre": "Club Brugge KV",
+    "nombre_corto": "BRU",
+    "pais": "Europa"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/58.png",
+    "id": 29,
+    "liga": "Champions League",
+    "nombre": "Aston Villa FC",
+    "nombre_corto": "AVL",
+    "pais": "Inglaterra"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-08T16:45:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 33144,
+   "jornada": 1,
+   "liga": "Champions League",
+   "prediccion": {
+    "confianza": 0.47612136259830007,
+    "creado_en": "2026-08-31T12:15:09.091470Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 2,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.3263728260312261,
+    "prob_local": 0.1975058113704738,
+    "prob_visitante": 0.47612136259830007,
+    "resultado_predicho": "V"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/1899.png",
+    "id": 428,
+    "liga": "Champions League",
+    "nombre": "PAE AEK",
+    "nombre_corto": "AEK",
+    "pais": "Europa"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/2016.png",
+    "id": 429,
+    "liga": "Champions League",
+    "nombre": "LASK Linz",
+    "nombre_corto": "LIN",
+    "pais": "Europa"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-08T16:45:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 33145,
+   "jornada": 1,
+   "liga": "Champions League",
+   "prediccion": {
+    "confianza": 0.35026203720417354,
+    "creado_en": "2026-08-31T12:15:09.091470Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.35026203720417354,
+    "prob_local": 0.32257091884256095,
+    "prob_visitante": 0.32716704395326546,
+    "resultado_predicho": "E"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/715.png",
+    "id": 24,
+    "liga": "Championship",
+    "nombre": "Cardiff City FC",
+    "nombre_corto": "CAR",
+    "pais": "Inglaterra"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/70.png",
+    "id": 12,
+    "liga": "Championship",
+    "nombre": "Stoke City FC",
+    "nombre_corto": "STK",
+    "pais": "Inglaterra"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-08T18:45:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 30102,
+   "jornada": 6,
+   "liga": "Championship",
+   "prediccion": {
+    "confianza": 0.4267498957041567,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 0,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.4267498957041567,
+    "prob_local": 0.31044124962548847,
+    "prob_visitante": 0.26280885467035475,
+    "resultado_predicho": "E"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/59.png",
+    "id": 36,
+    "liga": "Championship",
+    "nombre": "Blackburn Rovers FC",
+    "nombre_corto": "BLA",
+    "pais": "Inglaterra"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/356.png",
+    "id": 28,
+    "liga": "Championship",
+    "nombre": "Sheffield United FC",
+    "nombre_corto": "SHE",
+    "pais": "Inglaterra"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-08T18:45:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 30099,
+   "jornada": 6,
+   "liga": "Championship",
+   "prediccion": {
+    "confianza": 0.37361743576637846,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.37133867304864876,
+    "prob_local": 0.2550438911849727,
+    "prob_visitante": 0.37361743576637846,
+    "resultado_predicho": "V"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/340.png",
+    "id": 13,
+    "liga": "Championship",
+    "nombre": "Southampton FC",
+    "nombre_corto": "SOU",
+    "pais": "Inglaterra"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/72.png",
+    "id": 2,
+    "liga": "Championship",
+    "nombre": "Swansea City AFC",
+    "nombre_corto": "SWA",
+    "pais": "Inglaterra"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-08T18:45:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 30100,
+   "jornada": 6,
+   "liga": "Championship",
+   "prediccion": {
+    "confianza": 0.41620280406983895,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.35141803878116473,
+    "prob_local": 0.41620280406983895,
+    "prob_visitante": 0.2323791571489963,
+    "resultado_predicho": "L"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/346.png",
+    "id": 14,
+    "liga": "Championship",
+    "nombre": "Watford FC",
+    "nombre_corto": "WAT",
+    "pais": "Inglaterra"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/1081.png",
+    "id": 41,
+    "liga": "Championship",
+    "nombre": "Preston North End FC",
+    "nombre_corto": "PNE",
+    "pais": "Inglaterra"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-08T18:45:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 30101,
+   "jornada": 6,
+   "liga": "Championship",
+   "prediccion": {
+    "confianza": 0.4347438153160183,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.4347438153160183,
+    "prob_local": 0.26766516142999214,
+    "prob_visitante": 0.2975910232539896,
+    "resultado_predicho": "E"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/404.png",
+    "id": 58,
+    "liga": "Championship",
+    "nombre": "Wrexham AFC",
+    "nombre_corto": "WRE",
+    "pais": "Inglaterra"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/328.png",
+    "id": 1,
+    "liga": "Championship",
+    "nombre": "Burnley FC",
+    "nombre_corto": "BUR",
+    "pais": "Inglaterra"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-08T18:45:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 30105,
+   "jornada": 6,
+   "liga": "Championship",
+   "prediccion": {
+    "confianza": 0.3746250624345762,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.3384929489915566,
+    "prob_local": 0.2868819885738672,
+    "prob_visitante": 0.3746250624345762,
+    "resultado_predicho": "V"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/60.png",
+    "id": 48,
+    "liga": "Championship",
+    "nombre": "Bolton Wanderers FC",
+    "nombre_corto": "BOL",
+    "pais": "Inglaterra"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/563.png",
+    "id": 283,
+    "liga": "Championship",
+    "nombre": "West Ham United FC",
+    "nombre_corto": "WHU",
+    "pais": "Inglaterra"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-08T19:00:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 30106,
+   "jornada": 6,
+   "liga": "Championship",
+   "prediccion": {
+    "confianza": 0.5419437826267671,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.32986548325330595,
+    "prob_local": 0.1281907341199268,
+    "prob_visitante": 0.5419437826267671,
+    "resultado_predicho": "V"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/86.png",
+    "id": 67,
+    "liga": "Champions League",
+    "nombre": "Real Madrid CF",
+    "nombre_corto": "RMA",
+    "pais": "Espana"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/108.png",
+    "id": 308,
+    "liga": "Champions League",
+    "nombre": "FC Internazionale Milano",
+    "nombre_corto": "INT",
+    "pais": "Italia"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-08T19:00:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 33146,
+   "jornada": 1,
+   "liga": "Champions League",
+   "prediccion": {
+    "confianza": 0.642234870483698,
+    "creado_en": "2026-08-31T12:15:09.091470Z",
+    "marcador_probable_local": 2,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.24738990116055828,
+    "prob_local": 0.642234870483698,
+    "prob_visitante": 0.11037522835574376,
+    "resultado_predicho": "L"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/503.png",
+    "id": 226,
+    "liga": "Champions League",
+    "nombre": "FC Porto",
+    "nombre_corto": "FCP",
+    "pais": "Portugal"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/65.png",
+    "id": 9,
+    "liga": "Champions League",
+    "nombre": "Manchester City FC",
+    "nombre_corto": "MCI",
+    "pais": "Inglaterra"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-08T19:00:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 33147,
+   "jornada": 1,
+   "liga": "Champions League",
+   "prediccion": {
+    "confianza": 0.36165695894773503,
+    "creado_en": "2026-08-31T12:15:09.091470Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.30360429933007627,
+    "prob_local": 0.36165695894773503,
+    "prob_visitante": 0.33473874172218876,
+    "resultado_predicho": "L"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/4.png",
+    "id": 338,
+    "liga": "Champions League",
+    "nombre": "Borussia Dortmund",
+    "nombre_corto": "BVB",
+    "pais": "Alemania"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/94.png",
+    "id": 78,
+    "liga": "Champions League",
+    "nombre": "Villarreal CF",
+    "nombre_corto": "VIL",
+    "pais": "Espana"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-08T19:00:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 33148,
+   "jornada": 1,
+   "liga": "Champions League",
+   "prediccion": {
+    "confianza": 0.40581584269772714,
+    "creado_en": "2026-08-31T12:15:09.091470Z",
+    "marcador_probable_local": 2,
+    "marcador_probable_visitante": 2,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.3400842449376817,
+    "prob_local": 0.2540999123645911,
+    "prob_visitante": 0.40581584269772714,
+    "resultado_predicho": "V"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/521.png",
+    "id": 357,
+    "liga": "Champions League",
+    "nombre": "Lille OSC",
+    "nombre_corto": "LIL",
+    "pais": "Francia"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/90.png",
+    "id": 70,
+    "liga": "Champions League",
+    "nombre": "Real Betis Balompié",
+    "nombre_corto": "BET",
+    "pais": "Espana"
+   },
+   "estado": "programado",
+   "fecha": "2026-09-08T19:00:00Z",
+   "goles_local": null,
+   "goles_visitante": null,
+   "id": 33149,
+   "jornada": 1,
+   "liga": "Champions League",
+   "prediccion": {
+    "confianza": 0.35211080327003635,
+    "creado_en": "2026-08-31T12:15:09.091470Z",
+    "marcador_probable_local": 2,
+    "marcador_probable_visitante": 0,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.3136765428662674,
+    "prob_local": 0.33421265386369625,
+    "prob_visitante": 0.35211080327003635,
+    "resultado_predicho": "V"
+   },
+   "resultado_real": null,
+   "temporada": "2026/2027"
   }
  ],
  "resultados": [
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/503.png",
+    "id": 226,
+    "liga": "Champions League",
+    "nombre": "FC Porto",
+    "nombre_corto": "FCP",
+    "pais": "Portugal"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/583.png",
+    "id": 218,
+    "liga": "Primeira Liga",
+    "nombre": "Moreirense FC",
+    "nombre_corto": "MOR",
+    "pais": "Portugal"
+   },
+   "estado": "finalizado",
+   "fecha": "2026-09-04T19:15:00Z",
+   "goles_local": 2,
+   "goles_visitante": 1,
+   "id": 32306,
+   "jornada": 5,
+   "liga": "Primeira Liga",
+   "prediccion": {
+    "confianza": 0.7249500198171446,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 2,
+    "marcador_probable_visitante": 0,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.20709746106957236,
+    "prob_local": 0.7249500198171446,
+    "prob_visitante": 0.06795251911328308,
+    "resultado_predicho": "L"
+   },
+   "resultado_real": "L",
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/524.png",
+    "id": 168,
+    "liga": "Champions League",
+    "nombre": "Paris Saint-Germain FC",
+    "nombre_corto": "PSG",
+    "pais": "Francia"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/548.png",
+    "id": 155,
+    "liga": "Ligue 1",
+    "nombre": "AS Monaco FC",
+    "nombre_corto": "ASM",
+    "pais": "Francia"
+   },
+   "estado": "finalizado",
+   "fecha": "2026-09-04T19:05:00Z",
+   "goles_local": 1,
+   "goles_visitante": 2,
+   "id": 31679,
+   "jornada": 3,
+   "liga": "Ligue 1",
+   "prediccion": {
+    "confianza": 0.6067152933975108,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 2,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.2547201358403419,
+    "prob_local": 0.6067152933975108,
+    "prob_visitante": 0.13856457076214734,
+    "resultado_predicho": "L"
+   },
+   "resultado_real": "V",
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/349.png",
+    "id": 35,
+    "liga": "Premier League",
+    "nombre": "Ipswich Town FC",
+    "nombre_corto": "IPS",
+    "pais": "Inglaterra"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/64.png",
+    "id": 16,
+    "liga": "Champions League",
+    "nombre": "Liverpool FC",
+    "nombre_corto": "LIV",
+    "pais": "Inglaterra"
+   },
+   "estado": "finalizado",
+   "fecha": "2026-09-04T19:00:00Z",
+   "goles_local": 0,
+   "goles_visitante": 2,
+   "id": 29679,
+   "jornada": 3,
+   "liga": "Premier League",
+   "prediccion": {
+    "confianza": 0.5245235098353512,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.3013310201959961,
+    "prob_local": 0.17414546996865268,
+    "prob_visitante": 0.5245235098353512,
+    "resultado_predicho": "V"
+   },
+   "resultado_real": "V",
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/90.png",
+    "id": 70,
+    "liga": "Champions League",
+    "nombre": "Real Betis Balompié",
+    "nombre_corto": "BET",
+    "pais": "Espana"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/86.png",
+    "id": 67,
+    "liga": "Champions League",
+    "nombre": "Real Madrid CF",
+    "nombre_corto": "RMA",
+    "pais": "Espana"
+   },
+   "estado": "finalizado",
+   "fecha": "2026-09-04T19:00:00Z",
+   "goles_local": 1,
+   "goles_visitante": 0,
+   "id": 30630,
+   "jornada": 4,
+   "liga": "La Liga",
+   "prediccion": {
+    "confianza": 0.49581721474215257,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.3485015823117871,
+    "prob_local": 0.1556812029460604,
+    "prob_visitante": 0.49581721474215257,
+    "resultado_predicho": "V"
+   },
+   "resultado_real": "L",
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/107.png",
+    "id": 310,
+    "liga": "Serie A",
+    "nombre": "Genoa CFC",
+    "nombre_corto": "GEN",
+    "pais": "Italia"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/7397.png",
+    "id": 122,
+    "liga": "Champions League",
+    "nombre": "Como 1907",
+    "nombre_corto": "COM",
+    "pais": "Italia"
+   },
+   "estado": "finalizado",
+   "fecha": "2026-09-04T18:45:00Z",
+   "goles_local": 1,
+   "goles_visitante": 4,
+   "id": 30991,
+   "jornada": 3,
+   "liga": "Serie A",
+   "prediccion": {
+    "confianza": 0.559473954535286,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 0,
+    "marcador_probable_visitante": 2,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.3021425351405957,
+    "prob_local": 0.13838351032411825,
+    "prob_visitante": 0.559473954535286,
+    "resultado_predicho": "V"
+   },
+   "resultado_real": "V",
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/10.png",
+    "id": 143,
+    "liga": "Champions League",
+    "nombre": "VfB Stuttgart",
+    "nombre_corto": "VFB",
+    "pais": "Alemania"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/1.png",
+    "id": 135,
+    "liga": "Bundesliga",
+    "nombre": "1. FC Köln",
+    "nombre_corto": "KOE",
+    "pais": "Alemania"
+   },
+   "estado": "finalizado",
+   "fecha": "2026-09-04T18:30:00Z",
+   "goles_local": 4,
+   "goles_visitante": 1,
+   "id": 31360,
+   "jornada": 2,
+   "liga": "Bundesliga",
+   "prediccion": {
+    "confianza": 0.5776277087265645,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 2,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.2680550851033142,
+    "prob_local": 0.5776277087265645,
+    "prob_visitante": 0.15431720617012123,
+    "resultado_predicho": "L"
+   },
+   "resultado_real": "L",
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/6806.png",
+    "id": 194,
+    "liga": "Eredivisie",
+    "nombre": "Sparta Rotterdam",
+    "nombre_corto": "SPA",
+    "pais": "Paises Bajos"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/684.png",
+    "id": 196,
+    "liga": "Eredivisie",
+    "nombre": "PEC Zwolle",
+    "nombre_corto": "ZWO",
+    "pais": "Paises Bajos"
+   },
+   "estado": "finalizado",
+   "fecha": "2026-09-04T18:00:00Z",
+   "goles_local": 2,
+   "goles_visitante": 2,
+   "id": 31997,
+   "jornada": 5,
+   "liga": "Eredivisie",
+   "prediccion": {
+    "confianza": 0.36927478994569973,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.36927478994569973,
+    "prob_local": 0.33306249023615947,
+    "prob_visitante": 0.29766271981814085,
+    "resultado_predicho": "E"
+   },
+   "resultado_real": "E",
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/523.png",
+    "id": 355,
+    "liga": "Ligue 1",
+    "nombre": "Olympique Lyonnais",
+    "nombre_corto": "LYO",
+    "pais": "Francia"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/519.png",
+    "id": 347,
+    "liga": "Ligue 1",
+    "nombre": "AJ Auxerre",
+    "nombre_corto": "AJA",
+    "pais": "Francia"
+   },
+   "estado": "finalizado",
+   "fecha": "2026-09-04T17:00:00Z",
+   "goles_local": 3,
+   "goles_visitante": 1,
+   "id": 31681,
+   "jornada": 3,
+   "liga": "Ligue 1",
+   "prediccion": {
+    "confianza": 0.5394384815687298,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 7,
+    "marcador_probable_visitante": 0,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.266699230945936,
+    "prob_local": 0.5394384815687298,
+    "prob_visitante": 0.1938622874853342,
+    "resultado_predicho": "L"
+   },
+   "resultado_real": "L",
+   "temporada": "2026/2027"
+  },
+  {
+   "equipo_local": {
+    "escudo_url": "https://crests.football-data.org/92.png",
+    "id": 73,
+    "liga": "La Liga",
+    "nombre": "Real Sociedad de Fútbol",
+    "nombre_corto": "RSO",
+    "pais": "Espana"
+   },
+   "equipo_visitante": {
+    "escudo_url": "https://crests.football-data.org/558.png",
+    "id": 76,
+    "liga": "La Liga",
+    "nombre": "RC Celta de Vigo",
+    "nombre_corto": "CEL",
+    "pais": "Espana"
+   },
+   "estado": "finalizado",
+   "fecha": "2026-09-03T19:00:00Z",
+   "goles_local": 0,
+   "goles_visitante": 0,
+   "id": 30645,
+   "jornada": 6,
+   "liga": "La Liga",
+   "prediccion": {
+    "confianza": 0.3618654764877675,
+    "creado_en": "2026-08-31T11:31:30.714982Z",
+    "marcador_probable_local": 1,
+    "marcador_probable_visitante": 1,
+    "modelo_version": "v20260831T1131",
+    "prob_empate": 0.3618654764877675,
+    "prob_local": 0.28935078351727805,
+    "prob_visitante": 0.3487837399949544,
+    "resultado_predicho": "E"
+   },
+   "resultado_real": "E",
+   "temporada": "2026/2027"
+  },
   {
    "equipo_local": {
     "escudo_url": "https://crests.football-data.org/511.png",
@@ -3586,310 +4080,6 @@
     "resultado_predicho": "L"
    },
    "resultado_real": "V",
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/332.png",
-    "id": 44,
-    "liga": "Championship",
-    "nombre": "Birmingham City FC",
-    "nombre_corto": "BIR",
-    "pais": "Inglaterra"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/340.png",
-    "id": 13,
-    "liga": "Championship",
-    "nombre": "Southampton FC",
-    "nombre_corto": "SOU",
-    "pais": "Inglaterra"
-   },
-   "estado": "finalizado",
-   "fecha": "2026-09-01T19:00:00Z",
-   "goles_local": 1,
-   "goles_visitante": 1,
-   "id": 30080,
-   "jornada": 4,
-   "liga": "Championship",
-   "prediccion": {
-    "confianza": 0.4459671088651417,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.3450945295581002,
-    "prob_local": 0.20893836157675819,
-    "prob_visitante": 0.4459671088651417,
-    "resultado_predicho": "V"
-   },
-   "resultado_real": "E",
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/70.png",
-    "id": 12,
-    "liga": "Championship",
-    "nombre": "Stoke City FC",
-    "nombre_corto": "STK",
-    "pais": "Inglaterra"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/68.png",
-    "id": 27,
-    "liga": "Championship",
-    "nombre": "Norwich City FC",
-    "nombre_corto": "NOR",
-    "pais": "Inglaterra"
-   },
-   "estado": "finalizado",
-   "fecha": "2026-09-01T19:00:00Z",
-   "goles_local": 1,
-   "goles_visitante": 0,
-   "id": 30082,
-   "jornada": 4,
-   "liga": "Championship",
-   "prediccion": {
-    "confianza": 0.4509910265011928,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.36984918667552896,
-    "prob_local": 0.1791597868232781,
-    "prob_visitante": 0.4509910265011928,
-    "resultado_predicho": "V"
-   },
-   "resultado_real": "L",
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/1126.png",
-    "id": 271,
-    "liga": "Championship",
-    "nombre": "Lincoln City FC",
-    "nombre_corto": "LIN",
-    "pais": "Inglaterra"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/59.png",
-    "id": 36,
-    "liga": "Championship",
-    "nombre": "Blackburn Rovers FC",
-    "nombre_corto": "BLA",
-    "pais": "Inglaterra"
-   },
-   "estado": "finalizado",
-   "fecha": "2026-09-01T18:45:00Z",
-   "goles_local": 0,
-   "goles_visitante": 0,
-   "id": 30077,
-   "jornada": 4,
-   "liga": "Championship",
-   "prediccion": {
-    "confianza": 0.3837578942539075,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 2,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.34930371147742123,
-    "prob_local": 0.3837578942539075,
-    "prob_visitante": 0.2669383942686714,
-    "resultado_predicho": "L"
-   },
-   "resultado_real": "E",
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/1081.png",
-    "id": 41,
-    "liga": "Championship",
-    "nombre": "Preston North End FC",
-    "nombre_corto": "PNE",
-    "pais": "Inglaterra"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/387.png",
-    "id": 40,
-    "liga": "Championship",
-    "nombre": "Bristol City FC",
-    "nombre_corto": "BRI",
-    "pais": "Inglaterra"
-   },
-   "estado": "finalizado",
-   "fecha": "2026-09-01T18:45:00Z",
-   "goles_local": 1,
-   "goles_visitante": 3,
-   "id": 30075,
-   "jornada": 4,
-   "liga": "Championship",
-   "prediccion": {
-    "confianza": 0.40731990301383114,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.40731990301383114,
-    "prob_local": 0.23637933614645174,
-    "prob_visitante": 0.356300760839717,
-    "resultado_predicho": "E"
-   },
-   "resultado_real": "V",
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/325.png",
-    "id": 56,
-    "liga": "Championship",
-    "nombre": "Portsmouth FC",
-    "nombre_corto": "POR",
-    "pais": "Inglaterra"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/342.png",
-    "id": 45,
-    "liga": "Championship",
-    "nombre": "Derby County FC",
-    "nombre_corto": "DER",
-    "pais": "Inglaterra"
-   },
-   "estado": "finalizado",
-   "fecha": "2026-09-01T18:45:00Z",
-   "goles_local": 0,
-   "goles_visitante": 2,
-   "id": 30079,
-   "jornada": 4,
-   "liga": "Championship",
-   "prediccion": {
-    "confianza": 0.38243924279420577,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.38243924279420577,
-    "prob_local": 0.28711138419359333,
-    "prob_visitante": 0.33044937301220095,
-    "resultado_predicho": "E"
-   },
-   "resultado_real": "V",
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/356.png",
-    "id": 28,
-    "liga": "Championship",
-    "nombre": "Sheffield United FC",
-    "nombre_corto": "SHE",
-    "pais": "Inglaterra"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/60.png",
-    "id": 48,
-    "liga": "Championship",
-    "nombre": "Bolton Wanderers FC",
-    "nombre_corto": "BOL",
-    "pais": "Inglaterra"
-   },
-   "estado": "finalizado",
-   "fecha": "2026-09-01T18:45:00Z",
-   "goles_local": 3,
-   "goles_visitante": 2,
-   "id": 30078,
-   "jornada": 4,
-   "liga": "Championship",
-   "prediccion": {
-    "confianza": 0.4879490198780265,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 0,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.3469903235684395,
-    "prob_local": 0.4879490198780265,
-    "prob_visitante": 0.1650606565535339,
-    "resultado_predicho": "L"
-   },
-   "resultado_real": "L",
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/563.png",
-    "id": 283,
-    "liga": "Championship",
-    "nombre": "West Ham United FC",
-    "nombre_corto": "WHU",
-    "pais": "Inglaterra"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/76.png",
-    "id": 26,
-    "liga": "Championship",
-    "nombre": "Wolverhampton Wanderers FC",
-    "nombre_corto": "WOL",
-    "pais": "Inglaterra"
-   },
-   "estado": "finalizado",
-   "fecha": "2026-09-01T18:45:00Z",
-   "goles_local": 4,
-   "goles_visitante": 2,
-   "id": 30076,
-   "jornada": 4,
-   "liga": "Championship",
-   "prediccion": {
-    "confianza": 0.33733200066572533,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 1,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.32946259219719914,
-    "prob_local": 0.3332054071370755,
-    "prob_visitante": 0.33733200066572533,
-    "resultado_predicho": "V"
-   },
-   "resultado_real": "L",
-   "temporada": "2026/2027"
-  },
-  {
-   "equipo_local": {
-    "escudo_url": "https://crests.football-data.org/72.png",
-    "id": 2,
-    "liga": "Championship",
-    "nombre": "Swansea City AFC",
-    "nombre_corto": "SWA",
-    "pais": "Inglaterra"
-   },
-   "equipo_visitante": {
-    "escudo_url": "https://crests.football-data.org/346.png",
-    "id": 14,
-    "liga": "Championship",
-    "nombre": "Watford FC",
-    "nombre_corto": "WAT",
-    "pais": "Inglaterra"
-   },
-   "estado": "finalizado",
-   "fecha": "2026-09-01T18:45:00Z",
-   "goles_local": 2,
-   "goles_visitante": 0,
-   "id": 30081,
-   "jornada": 4,
-   "liga": "Championship",
-   "prediccion": {
-    "confianza": 0.4333962980386895,
-    "creado_en": "2026-08-31T11:31:30.714982Z",
-    "marcador_probable_local": 1,
-    "marcador_probable_visitante": 0,
-    "modelo_version": "v20260831T1131",
-    "prob_empate": 0.36877902898324294,
-    "prob_local": 0.4333962980386895,
-    "prob_visitante": 0.1978246729780675,
-    "resultado_predicho": "L"
-   },
-   "resultado_real": "L",
    "temporada": "2026/2027"
   }
  ]
